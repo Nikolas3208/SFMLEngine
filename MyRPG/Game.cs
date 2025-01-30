@@ -1,24 +1,21 @@
 ﻿using GameEngine.Core;
 using GameEngine.Core.Graphics;
 using GameEngine.Core.Layers;
+using GameEngine.Core.Scenes;
 using SFML.Window;
 namespace MyRPG
 {
     public class Game
     {
         private readonly Application Application;
-        private LayerStack _layerStack;
-
+        private ScenesStack _scenesStack;
         public Game(WindowSettings settings)
         {
-            _layerStack = new LayerStack("");
+            _scenesStack = new ScenesStack("");
 
-            var layer = new LayerBase(_layerStack);
-            layer.AddScene(new GameScene(layer));
+            _scenesStack.AddScene(new GameScene(""));
 
-            _layerStack.AddLayer(layer);
-
-            Application = new Application(settings, _layerStack);
+            Application = new Application(settings, _scenesStack);
         }
 
         public void Run()

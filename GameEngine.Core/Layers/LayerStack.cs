@@ -15,7 +15,6 @@ namespace GameEngine.Core.Layers
         public string Name { get; set; } = string.Empty;
 
         private List<LayerBase> _layers;
-        private Camera Camera { get; set; }
 
         private int _layerId;
 
@@ -42,55 +41,11 @@ namespace GameEngine.Core.Layers
 
         public LayerBase GetLayer(int id) => _layers.First(l => l.Id == id);
 
-        public void Start()
-        {
-            foreach (LayerBase layer in _layers)
-            {
-                layer.Start();
-            }
-        }
-
-        public void Update(float deltaTime)
-        {
-            foreach (var layer in _layers)
-            {
-                layer.Update(deltaTime);
-            }
-        }
-
         public void Draw(RenderTarget target, RenderStates state)
         {
             foreach(var layer in _layers)
             {
                 layer.Draw(target, state);
-            }
-        }
-
-        public Camera GetCamera()
-        {
-            return Camera;
-        }
-
-        public void SetCamera(Camera camera)
-        {
-            Camera = camera;
-        }
-
-        public Camera Resize(Vector2u size)
-        {
-            foreach (LayerBase layer in _layers)
-            {
-                layer.Resize(size);
-            }
-
-            return Camera = Camera.Resize((Vector2f)size);
-        }
-
-        public void Close()
-        {
-            foreach(var layer in _layers)
-            {
-                layer.Close();
             }
         }
     }

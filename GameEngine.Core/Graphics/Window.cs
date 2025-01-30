@@ -1,7 +1,6 @@
 ﻿using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace GameEngine.Core.Graphics
 {
@@ -46,7 +45,7 @@ namespace GameEngine.Core.Graphics
 
                 _application.Update(clock.Restart().AsSeconds());
 
-                _renderWindow.SetView(_application.GetLayerStack().GetCamera().GetView());
+                _renderWindow.SetView(_application.GetScenesStack().GetCamera().GetView());
 
                 _renderWindow.Clear();
 

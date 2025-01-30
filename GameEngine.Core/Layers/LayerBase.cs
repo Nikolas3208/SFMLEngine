@@ -1,4 +1,5 @@
-﻿using GameEngine.Core.Graphics;
+﻿using GameEngine.Core.GameObjects;
+using GameEngine.Core.Graphics;
 using GameEngine.Core.Scenes;
 using SFML.Graphics;
 using SFML.System;
@@ -10,57 +11,40 @@ using System.Threading.Tasks;
 
 namespace GameEngine.Core.Layers
 {
-    public class LayerBase : Drawable
+    public class LayerBase
     {
         public int Id {  get; set; }
         public string Name { get; set; } = string.Empty;
 
         public readonly LayerStack Perent;
 
-        private SceneBase Scene { get; set; }
+        private List<GameObject> _gameObjects;
 
-        public LayerBase(LayerStack perent)
+        public LayerBase(string name, int id, LayerStack perent)
         {
+            Name = name;
+            Id = id;
             Perent = perent;
+
+            _gameObjects = new List<GameObject>();
         }
 
-        public virtual void AddScene(SceneBase scene) => Scene = scene;
-
-        public virtual void RemoveScene() => Scene = null;
-
-        public virtual SceneBase GetScene() => Scene;
-
-        public virtual void Resize(Vector2u size)
+        public void AddDrawObject(GameObject gameObject)
         {
-            Scene.Resize(size);
+            _gameObjects.Add(gameObject);
         }
 
-        public virtual void Start()
+        public void RemoveDrawObject(GameObject gameObject)
         {
-            if (Scene != null)
-                Scene.Start();
+            _gameObjects.Remove(gameObject);
         }
 
-        public virtual void Update(float deltaTime)
+        public void Draw(RenderTarget target, RenderStates states)
         {
-            if (Scene != null)
-                Scene.Update(deltaTime);
-        }
-
-        public virtual void Draw(RenderTarget target, RenderStates states)
-        {
-            if (Scene != null)
-                Scene.Draw(target, states);
-        }
-
-        public Camera GetCamera()
-        {
-            return Perent.GetCamera();
-        }
-
-        public void Close()
-        {
-            Scene.Close();
+            foreach(var go in _gameObjects)
+            {
+                target.Draw(go, states);
+            }
         }
     }
 }

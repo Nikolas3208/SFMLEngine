@@ -14,24 +14,32 @@ namespace GameEngine.Core.Scenes
     public class SceneBase
     {
         protected virtual List<GameObject> GameObjects { get; set; }
-
-        protected LayerBase Perent {  get; set; }
+        protected Camera Camera {  get; set; }
+        protected LayerStack LayerStack { get; set; }
 
         protected int gameObjectId;
 
-        public AssetsMenager AssetsMenager { get; protected set; }
+        public ScenesStack Perent;
 
-        public SceneBase(LayerBase layerBase)
+        public int Id;
+        public string Name { get; set; }
+        public bool IsLoad = false;
+
+        public SceneBase(string name)
         {
-            Perent = layerBase;
             GameObjects = new List<GameObject>();
+            LayerStack = new LayerStack(name + "_layerStack");
+            LayerStack.AddLayer(new LayerBase("", 0, LayerStack));
+            Name = name;
         }
 
-        public void AddGameObject(GameObject gameObject)
+        public void AddGameObject(GameObject gameObject, int layerId = 0)
         {
             gameObject.Id = gameObjectId;
             gameObjectId++;
             GameObjects.Add(gameObject);
+
+            LayerStack.GetLayer(layerId).AddDrawObject(gameObject);
         }
 
         public void RemoveGameObject(GameObject gameObject)
@@ -73,10 +81,12 @@ namespace GameEngine.Core.Scenes
             }
         }
 
-        public virtual void Resize(Vector2u size)
+        public void SetCamera(Camera camera)
         {
-
+            Camera = camera;
         }
+        public Camera GetCamera() => Camera;
+
         public virtual void Close()
         {
             

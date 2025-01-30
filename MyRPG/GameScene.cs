@@ -2,23 +2,23 @@
 using GameEngine.Core.Layers;
 using GameEngine.Core.Scenes;
 using MyRPG.GameObjects;
+using SFML.System;
 
 namespace MyRPG
 {
     public class GameScene : SceneBase
     {
-        public GameScene(LayerBase layerBase) : base(layerBase)
+        public GameScene(string name) : base(name)
         {
-            AssetsMenager = new AssetsMenager("\\Assets\\");
+
         }
 
         public override void Start()
         {
-            AssetsMenager.Load();
+            Perent.AssetsMenager = new AssetsMenager("\\Assets\\");
+            Perent.AssetsMenager.Load();
             AddGameObject(new Cube(this));
-            GetGameObject(0).Position = new SFML.System.Vector2f(10, 10);
-            AddGameObject(new Cube(this));
-            GetGameObject(1).Position = new SFML.System.Vector2f(220, 220);
+            GetGameObject(0).Position = new Vector2f(220, 220);
 
             base.Start();
         }

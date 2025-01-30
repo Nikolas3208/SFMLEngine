@@ -1,12 +1,7 @@
 ﻿using GameEngine.Core.Graphics;
-using GameEngine.Core.Layers;
+using GameEngine.Core.Scenes;
 using SFML.Graphics;
 using SFML.System;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameEngine.Core
 {
@@ -15,44 +10,44 @@ namespace GameEngine.Core
         private Window _window;
         private WindowSettings _windowSettings;
 
-        private LayerStack _layerStack;
+        private ScenesStack _scenesStack;
 
-        public Application(WindowSettings settings, LayerStack layerStack)
+        public Application(WindowSettings settings, ScenesStack scenesStack)
         {
             _windowSettings = settings;
             _window = new Window(this, settings.VideoMode, settings.Title);
 
-            _layerStack = layerStack;
+            _scenesStack = scenesStack;
         }
 
-        public LayerStack GetLayerStack() => _layerStack;
+        public ScenesStack GetScenesStack() => _scenesStack;
 
         public void Run()
         {
-            _layerStack.SetCamera(new Camera(_window.GetView()));
-            _layerStack.Start();
+            _scenesStack.SetCamera(new Camera(_window.GetView()));
+            _scenesStack.Start();
 
             _window.Run();
         }
 
         public void Update(float deltaTime)
         {
-            _layerStack.Update(deltaTime);
+            _scenesStack.Update(deltaTime);
         }
 
         public void Draw(RenderTarget target, RenderStates states)
         {
-            _layerStack.Draw(target, states);
+            _scenesStack.Draw(target, states);
         }
 
         public Camera Resize(Vector2u size)
         {
-            return _layerStack.Resize(size);
+            return _scenesStack.GetCamera().Resize((Vector2f)size);
         }
 
         public void Close()
         {
-            _layerStack.Close();
+            _scenesStack.Close();
         }
     }
 }
