@@ -1,5 +1,8 @@
 ﻿using GameEngine.Core.GameObjects;
+using GameEngine.Core.Graphics;
+using GameEngine.Core.Scenes;
 using SFML.Graphics;
+using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,20 +14,30 @@ namespace MyRPG.GameObjects
     public class Cube : GameObject
     {
         private RectangleShape _rectangleShape;
+        private SpriteSheet _spriteSheet;
+
+        public Cube(SceneBase perent) : base(perent)
+        {
+        }
+
         public override void Start()
         {
-            _rectangleShape = new RectangleShape(new SFML.System.Vector2f(10, 10));
-            _rectangleShape.Position = new SFML.System.Vector2f(5, 0);
-            _rectangleShape.FillColor = Color.White;
+            _spriteSheet = new SpriteSheet(6, 8, true, 1, Perent.AssetsMenager.GetTexture("Warrior_Blue"));
+
+            _rectangleShape = new RectangleShape(new Vector2f(192, 192));
+            _rectangleShape.Texture = _spriteSheet.GetTexture();
+            _rectangleShape.TextureRect = _spriteSheet.GetTextureRect(0, 0);
         }
 
         public override void Update(float deltaTime)
         {
-            _rectangleShape.Position = new SFML.System.Vector2f(5, _rectangleShape.Position.Y + 0.004f);
+
         }
 
         public override void Draw(RenderTarget target, RenderStates states)
         {
+            states.Transform *= Transform;
+
             _rectangleShape.Draw(target, states);
         }
     }

@@ -19,6 +19,8 @@ namespace GameEngine.Core.Scenes
 
         protected int gameObjectId;
 
+        public AssetsMenager AssetsMenager { get; protected set; }
+
         public SceneBase(LayerBase layerBase)
         {
             Perent = layerBase;
