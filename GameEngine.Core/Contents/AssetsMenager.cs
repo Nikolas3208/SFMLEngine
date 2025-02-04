@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameEngine.Core
+namespace GameEngine.Core.Contents
 {
     public class AssetsMenager
     {
-        private Dictionary<string, Texture> _textures;
+        private static Dictionary<string, Texture> _textures = [];
 
         private string _path;
 
@@ -46,7 +46,7 @@ namespace GameEngine.Core
             }
         }
 
-        public Texture GetTexture(string name)
+        public static Texture GetTexture(string name)
         {
             if (!_textures.ContainsKey(name))
             {
@@ -54,6 +54,16 @@ namespace GameEngine.Core
             }
 
             return _textures[name];
+        }
+
+        public static string GetTextureNameById(int id)
+        {
+            return _textures.Keys.ToList()[id];
+        }
+
+        public static int GetTextureCount()
+        {
+            return _textures.Count;
         }
     }
 }

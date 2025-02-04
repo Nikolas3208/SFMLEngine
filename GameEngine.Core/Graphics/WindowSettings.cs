@@ -10,6 +10,8 @@ namespace GameEngine.Core.Graphics
     public struct WindowSettings
     {
         public string Title {  get; set; }
+        public bool VSinc { get; set; } = false;
+        public uint FramerateLimit { get; set; } = 60;
         public VideoMode VideoMode { get; set; }
 
         public Styles Styles { get; set; } = Styles.Default;

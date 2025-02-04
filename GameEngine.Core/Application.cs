@@ -1,28 +1,33 @@
 ﻿using GameEngine.Core.Graphics;
+using GameEngine.Core.Gui;
 using GameEngine.Core.Scenes;
+using ImGuiNET;
 using SFML.Graphics;
 using SFML.System;
+using System.Numerics;
 
 namespace GameEngine.Core
 {
     public class Application : Drawable
     {
-        private Window _window;
-        private WindowSettings _windowSettings;
+        protected Window _window;
+        protected WindowSettings _windowSettings;
 
-        private ScenesStack _scenesStack;
+        protected ScenesStack _scenesStack;
 
-        public Application(WindowSettings settings, ScenesStack scenesStack)
+        public Application(WindowSettings settings)
         {
             _windowSettings = settings;
-            _window = new Window(this, settings.VideoMode, settings.Title);
+            _window = Window.Create(this, settings.VideoMode, settings.Title);
+            _window.SetVerticalSyncEnabled(settings.VSinc);
+            _window.SetFramerateLimit(settings.FramerateLimit);
 
-            _scenesStack = scenesStack;
+            _scenesStack = new ScenesStack("Stack");
         }
 
         public ScenesStack GetScenesStack() => _scenesStack;
 
-        public void Run()
+        public virtual void Run()
         {
             _scenesStack.SetCamera(new Camera(_window.GetView()));
             _scenesStack.Start();
@@ -30,22 +35,24 @@ namespace GameEngine.Core
             _window.Run();
         }
 
-        public void Update(float deltaTime)
+        public virtual void Update(Time deltaTime)
         {
             _scenesStack.Update(deltaTime);
         }
 
-        public void Draw(RenderTarget target, RenderStates states)
+        
+
+        public virtual void Draw(RenderTarget target, RenderStates states)
         {
             _scenesStack.Draw(target, states);
         }
 
-        public Camera Resize(Vector2u size)
+        public virtual Camera Resize(Vector2u size)
         {
             return _scenesStack.GetCamera().Resize((Vector2f)size);
         }
 
-        public void Close()
+        public virtual void Close()
         {
             _scenesStack.Close();
         }

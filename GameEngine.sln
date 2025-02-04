@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyRPG", "MyRPG\MyRPG.csproj", "{A88B0E2B-AF64-4743-85A2-2380B8C18DF7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameEngine.Core", "GameEngine.Core\GameEngine.Core.csproj", "{58E66F54-8DEE-4BDE-9E5B-07D975A85381}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameEngine.Editor", "GameEngine.Editor\GameEngine.Editor.csproj", "{F62FB530-BE38-4A2B-9C2A-E221D69A00D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A88B0E2B-AF64-4743-85A2-2380B8C18DF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A88B0E2B-AF64-4743-85A2-2380B8C18DF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A88B0E2B-AF64-4743-85A2-2380B8C18DF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A88B0E2B-AF64-4743-85A2-2380B8C18DF7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{58E66F54-8DEE-4BDE-9E5B-07D975A85381}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{58E66F54-8DEE-4BDE-9E5B-07D975A85381}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58E66F54-8DEE-4BDE-9E5B-07D975A85381}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58E66F54-8DEE-4BDE-9E5B-07D975A85381}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F62FB530-BE38-4A2B-9C2A-E221D69A00D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F62FB530-BE38-4A2B-9C2A-E221D69A00D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F62FB530-BE38-4A2B-9C2A-E221D69A00D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F62FB530-BE38-4A2B-9C2A-E221D69A00D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

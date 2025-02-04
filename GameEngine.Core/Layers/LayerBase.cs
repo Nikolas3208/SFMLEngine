@@ -43,7 +43,7 @@ namespace GameEngine.Core.Layers
         {
             foreach(var go in _gameObjects)
             {
-                target.Draw(go, states);
+                go.Draw(target, states);
             }
         }
     }

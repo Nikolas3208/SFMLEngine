@@ -47,5 +47,12 @@ namespace GameEngine.Core.Graphics
 
             return this;
         }
+
+        public Camera Move(Vector2f offset)
+        {
+            _view.Move(offset);
+
+            return this;
+        }
     }
 }

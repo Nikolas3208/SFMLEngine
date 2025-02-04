@@ -1,4 +1,5 @@
-﻿using GameEngine.Core.Graphics;
+﻿using GameEngine.Core.Contents;
+using GameEngine.Core.Graphics;
 using SFML.Graphics;
 using SFML.System;
 using System;
@@ -24,6 +25,8 @@ namespace GameEngine.Core.Scenes
             Name = name;
 
             _scenes = new List<SceneBase>();
+            AssetsMenager = new AssetsMenager("\\Assets\\");
+            AssetsMenager.Load();
         }
 
         public void AddScene(SceneBase scene)
@@ -41,7 +44,7 @@ namespace GameEngine.Core.Scenes
             _scenes.Remove(scene);
         }
 
-        public SceneBase GetSceneBase(int id)
+        public SceneBase GetScene(int id)
         {
             return _scenes.FirstOrDefault(s => s.Id == id);
         }
@@ -54,7 +57,7 @@ namespace GameEngine.Core.Scenes
             }
         }
 
-        public void Update(float deltaTime)
+        public void Update(Time deltaTime)
         {
             foreach(SceneBase scene in _scenes)
             {

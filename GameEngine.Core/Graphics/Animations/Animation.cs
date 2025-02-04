@@ -1,4 +1,5 @@
-﻿namespace GameEngine.Core.Graphics.Animations
+﻿
+namespace GameEngine.Core.Graphics.Animations
 {
     public class Animation
     {
@@ -11,7 +12,8 @@
 
         public Animation(params AnimationFrame[] frames)
         {
-            this.frames = frames;
+            if (frames != null)
+                this.frames = frames;
             Reset();
         }
 
@@ -46,5 +48,4 @@
             return currFrame;
         }
     }
-
 }

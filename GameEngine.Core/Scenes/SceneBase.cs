@@ -13,11 +13,9 @@ namespace GameEngine.Core.Scenes
 {
     public class SceneBase
     {
-        protected virtual List<GameObject> GameObjects { get; set; }
+        protected List<GameObject> GameObjects { get; set; }
         protected Camera Camera {  get; set; }
         protected LayerStack LayerStack { get; set; }
-
-        protected int gameObjectId;
 
         public ScenesStack Perent;
 
@@ -25,7 +23,7 @@ namespace GameEngine.Core.Scenes
         public string Name { get; set; }
         public bool IsLoad = false;
 
-        public SceneBase(string name)
+        public SceneBase(string name = "Scene")
         {
             GameObjects = new List<GameObject>();
             LayerStack = new LayerStack(name + "_layerStack");
@@ -33,10 +31,32 @@ namespace GameEngine.Core.Scenes
             Name = name;
         }
 
+        public SceneBase(LayerStack layerStack, string name = "Scene")
+        {
+            GameObjects = new List<GameObject>();
+            LayerStack = layerStack;
+            Name = name;
+        }
+
         public void AddGameObject(GameObject gameObject, int layerId = 0)
         {
-            gameObject.Id = gameObjectId;
-            gameObjectId++;
+            int index = 2;
+            foreach (GameObject go in GameObjects)
+            {
+                if (go.Name == gameObject.Name)
+                {
+                    if (index == 2)
+                    {
+                        gameObject.Name += $" ({index})";
+                    }
+                    else
+                    {
+                        gameObject.Name = gameObject.Name.Replace($"({index - 1})", $"({index})");
+                    }
+                    index++;
+                }
+            }
+
             GameObjects.Add(gameObject);
 
             LayerStack.GetLayer(layerId).AddDrawObject(gameObject);
@@ -47,9 +67,9 @@ namespace GameEngine.Core.Scenes
             GameObjects.Remove(gameObject);
         }
 
-        public GameObject GetGameObject(int id)
+        public T GetGameObjectById<T>(Guid id) where T : GameObject
         {
-            return GameObjects.FirstOrDefault(g => g.Id == id);
+            return (T)GameObjects.FirstOrDefault(g => g.Id == id);
         }
 
         public T GetGameObject<T>() where T : GameObject
@@ -57,6 +77,7 @@ namespace GameEngine.Core.Scenes
             return (T)GameObjects.FirstOrDefault(g => g.GetType() == typeof(T));
         }
 
+        public List<GameObject> GetGameObjects() => GameObjects;
         public virtual void Start()
         {
             foreach (var gameObject in GameObjects)
@@ -65,7 +86,7 @@ namespace GameEngine.Core.Scenes
             }
         }
 
-        public virtual void Update(float deltaTime)
+        public virtual void Update(Time deltaTime)
         {
             foreach (var gameObject in GameObjects)
             {

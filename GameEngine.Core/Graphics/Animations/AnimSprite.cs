@@ -42,6 +42,9 @@ namespace GameEngine.Core.Graphics.Animations
         // Проигрывает указанную анимацию
         public void Play(string name)
         {
+            if (animations.Count < 1 || name == null || name == "")
+                return;
+
             if (currAnimName == name)
                 return;
 
@@ -53,15 +56,30 @@ namespace GameEngine.Core.Graphics.Animations
         public IntRect GetTextureRect()
         {
             var currFrame = currAnim.GetFrame(Speed);
-            return ss.GetTextureRect(currFrame.i, currFrame.j);
+            if (currFrame.i > 0 && currFrame.j > 0)
+                return ss.GetTextureRect(currFrame.i, currFrame.j);
+
+            return ss.GetTextureRect(currFrame.i);
         }
 
         public void Draw(RenderTarget target, RenderStates states)
         {
-            rectShape.TextureRect = GetTextureRect();
+            if (animations.Count > 0)
+            {
+                rectShape.TextureRect = GetTextureRect();
 
-            states.Transform *= Transform;
-            target.Draw(rectShape, states);
+                states.Transform *= Transform;
+                target.Draw(rectShape, states);
+            }
+        }
+
+        public List<string> GetAnimationsName() => animations.Keys.ToList();
+
+        public List<Animation> GetAnimations() => animations.Values.ToList();
+
+        public void UpdateSpriteSheet(SpriteSheet spriteSheet)
+        {
+            ss = spriteSheet;
         }
     }
 }
