@@ -18,15 +18,24 @@ namespace GameEngine.Core.Graphics
         public int SubCountX { get; private set; }
         public int SubCountY { get; private set; }
 
+        public bool AbIsCount { get => _abIsCount; set => _abIsCount = value; }
+
         public string Name { get; set; } = string.Empty;
 
         private int _borderSize;
         private bool _abIsCount;
 
         private Texture _texture;
-        public SpriteSheet()
+        public SpriteSheet(Texture texture, bool isSmooth = false)
         {
-            
+            _texture = texture;
+            _texture.Smooth = isSmooth;
+
+            SubWidth = 16;
+            SubHeight = 16;
+            SubCountX = 1;
+            SubCountY = 1;
+            AbIsCount = false;
         }
 
         /// <summary>
@@ -119,6 +128,9 @@ namespace GameEngine.Core.Graphics
         // В противном случае устаналваем количиство плиток
         public void SetTileSize(Vector2i size)
         {
+            if (size.X == 0 || size.Y == 0)
+                return;
+
             if (_abIsCount)
             {
                 SubWidth = (int)Math.Ceiling((float)_texture.Size.X / size.X);
@@ -135,14 +147,19 @@ namespace GameEngine.Core.Graphics
             }
         }
 
-        public Vector2i GetTileSize() => new Vector2i(SubWidth, SubHeight);
+        public Vector2i GetTileSize()
+        {
+            if (!_abIsCount)
+                return new Vector2i(SubWidth, SubHeight);
+            else
+                return new Vector2i(SubCountX, SubCountY);
+        }
 
         public int GetBorderSize() => _borderSize;
 
         public void SetTexture(Texture texture)
         {
             _texture = texture;
-            SetTileSize((Vector2i)texture.Size);
         }
     }
 }

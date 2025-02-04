@@ -6,24 +6,21 @@ using System.Threading.Tasks;
 
 namespace GameEngine.Core.Contents
 {
-    public enum AssetType
+    public class Asset : IAsset
     {
-        Texture,
-        SpriteSheet,
-        Sound
-    }
-    public class Asset
-    {
-        public string Name { get; set; }
-        public string Path { get; set; }
+        private string _name = string.Empty;
+        private string _fullPath = string.Empty;
+        private Guid _id;
+        private AssetType _type;
 
-        public AssetType Type { get; set; }
+        public string Name { get => _name; set => _name = value; }
+        public string FullPath { get => _fullPath; set => _fullPath = value; }
+        public Guid Id { get => _id; }
+        public AssetType Type { get => _type; set => _type = value; }
 
-        public Asset(AssetType type, string name, string path)
+        public Asset()
         {
-            Type = type;
-            Name = name;
-            Path = path;
+            _id = Guid.NewGuid();
         }
     }
 }

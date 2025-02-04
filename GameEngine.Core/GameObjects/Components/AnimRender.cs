@@ -1,4 +1,5 @@
-﻿using GameEngine.Core.Graphics;
+﻿using GameEngine.Core.Contents;
+using GameEngine.Core.Graphics;
 using GameEngine.Core.Graphics.Animations;
 using SFML.Graphics;
 using SFML.System;
@@ -30,9 +31,22 @@ namespace GameEngine.Core.GameObjects.Components
         {
             if (Perent.GetComponent<SpriteRender>() != null && Perent.GetComponent<SpriteRender>().GetTexture() != null)
             {
-                _spriteSheet = new SpriteSheet(128, 128, false, 0, Perent.GetComponent<SpriteRender>().GetTexture());
-                _animSprite = new AnimSprite(_spriteSheet);
-                _animSprite.Origin = (Vector2f)_spriteSheet.GetTileSize() / 2;
+                var asset = AssetsMenager.GetAsset<SpriteAsset>(Perent.GetComponent<SpriteRender>().TextureName);
+                if (asset != null)
+                {
+                    if (asset.SpriteSheet != null)
+                    {
+                        _spriteSheet = asset.SpriteSheet;
+                        _animSprite = new AnimSprite(_spriteSheet);
+                        _animSprite.Origin = (Vector2f)_spriteSheet.GetTileSize() / 2;
+                    }
+                    else
+                    {
+                        _spriteSheet = new SpriteSheet(asset.GetTexture(), asset.IsSmooth);
+                        _animSprite = new AnimSprite(_spriteSheet);
+                        _animSprite.Origin = (Vector2f)_spriteSheet.GetTileSize() / 2;
+                    }
+                }
             }
         }
 
@@ -67,10 +81,19 @@ namespace GameEngine.Core.GameObjects.Components
                 _animSprite.AddAnimation(name, animation);
         }
 
-        public void UpdateTexture(Texture texture)
+        public void UpdateTexture(string textureName)
         {
-            _spriteSheet.SetTexture(texture);
-            _animSprite.UpdateSpriteSheet(_spriteSheet);
+            var asset = AssetsMenager.GetAsset<SpriteAsset>(textureName);
+            if (asset.SpriteSheet != null && _animSprite != null)
+            {
+                _spriteSheet = asset.SpriteSheet;
+                _animSprite.UpdateSpriteSheet(_spriteSheet);
+            }
+            else if(asset.SpriteSheet == null && _animSprite != null)
+            {
+                _spriteSheet = new SpriteSheet(asset.GetTexture(), asset.IsSmooth);
+                _animSprite.UpdateSpriteSheet(_spriteSheet);
+            }
         }
     }
 }

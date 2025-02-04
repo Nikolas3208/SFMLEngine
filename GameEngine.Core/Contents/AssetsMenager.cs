@@ -9,61 +9,64 @@ namespace GameEngine.Core.Contents
 {
     public class AssetsMenager
     {
-        private static Dictionary<string, Texture> _textures = [];
-
+        private static Dictionary<string, IAsset> _assets = [];
         private string _path;
 
         public AssetsMenager(string path)
         {
             _path = path;
-            _textures = new Dictionary<string, Texture>();
+            _assets = new Dictionary<string, IAsset>();
         }
 
         public void Load()
         {
-            var currentDir = Directory.GetCurrentDirectory();
-            var files = Directory.GetFiles(currentDir + _path, "*.png", SearchOption.AllDirectories);
+            var files = Directory.GetFiles(_path, "*.png", SearchOption.AllDirectories);
 
             foreach (var file in files)
             {
-                string name = Path.GetFileName(file);
-                name = name.Remove(name.Length - 4, 4);
+                string fileName = Path.GetFileName(file);
+                fileName = fileName.Remove(fileName.Length - 4);
 
-                if(!_textures.ContainsKey(name))
-                    _textures.Add(name, new Texture(file));
-                else
-                {
-                    int i = 1;
-                    while(true)
-                    {
-                        if (!_textures.ContainsKey(name + $" ({i})"))
-                        {
-                            _textures.Add(name + $" ({i})", new Texture(file));
-                            break;
-                        }
-                    }
-                }
+                SpriteAsset asset = new SpriteAsset(new Texture(file));
+                asset.Name = fileName;
+                asset.FullPath = file;
+
+                if (!_assets.ContainsKey(fileName))
+                    _assets.Add(fileName, asset);
             }
         }
 
-        public static Texture GetTexture(string name)
+        public static IAsset? GetAsset(string key)
         {
-            if (!_textures.ContainsKey(name))
-            {
-                return null;
-            }
+            if (_assets.ContainsKey(key))
+                return _assets[key];
 
-            return _textures[name];
+            return null;
         }
 
-        public static string GetTextureNameById(int id)
+        public static T GetAsset<T>(string key) where T : IAsset
         {
-            return _textures.Keys.ToList()[id];
+            if (_assets.ContainsKey(key))
+                return (T)_assets[key];
+
+            throw new Exception("No found asset");
         }
 
-        public static int GetTextureCount()
+        public static string GetAssetKeyByIndex(int index) => _assets.Keys.ToArray()[index];
+        public static IAsset GetAssetByIndex(int index)
         {
-            return _textures.Count;
+            var key = _assets.Keys.ToArray()[index];
+
+            return _assets[key];
         }
+
+        public static IAsset GetAssetById(Guid id)
+        {
+            return _assets.FirstOrDefault(a => a.Value.Id == id).Value;
+        }
+
+        public static int GetAssetCount() => _assets.Count;
+
+        public static List<string> GetAssetNames() => _assets.Keys.ToList();
     }
 }

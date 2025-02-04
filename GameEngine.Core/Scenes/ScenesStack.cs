@@ -25,7 +25,7 @@ namespace GameEngine.Core.Scenes
             Name = name;
 
             _scenes = new List<SceneBase>();
-            AssetsMenager = new AssetsMenager("\\Assets\\");
+            AssetsMenager = new AssetsMenager("Assets");
             AssetsMenager.Load();
         }
 

@@ -35,6 +35,7 @@ namespace GameEngine.Core.Graphics.Animations
         public void AddAnimation(string name, Animation animation)
         {
             animations[name] = animation;
+            animation.Name = name;
             currAnim = animation;
             currAnimName = name;
         }
@@ -79,7 +80,13 @@ namespace GameEngine.Core.Graphics.Animations
 
         public void UpdateSpriteSheet(SpriteSheet spriteSheet)
         {
+            ss.SetTexture(spriteSheet.GetTexture());
             ss = spriteSheet;
+        }
+
+        internal void AddAnimation(object name, Animation animation)
+        {
+            throw new NotImplementedException();
         }
     }
 }

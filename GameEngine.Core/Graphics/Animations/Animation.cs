@@ -6,6 +6,8 @@ namespace GameEngine.Core.Graphics.Animations
         // Кадры
         public AnimationFrame[] frames;
 
+        public string Name { get; set; }
+
         float timer;
         AnimationFrame currFrame;
         int currFrameIndex;

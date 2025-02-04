@@ -20,6 +20,7 @@ namespace GameEngine.Core.GameObjects.Components
         public Guid Id { get => _id; set => _id = value; }
         public string Name { get => _name; set => _name = value; }
         public IGameObject Perent { get => _gameObject; set => _gameObject = value; }
+        public string TextureName { get; set; }
 
         public SpriteRender(IGameObject perent)
         {
@@ -48,14 +49,15 @@ namespace GameEngine.Core.GameObjects.Components
         }
 
         public Texture GetTexture() => _sprite.Texture;
-        public void UpdateTexture(Texture texture)
+        public void UpdateTexture(Texture texture, string name)
         {
+            TextureName = name;
             _sprite = new Sprite(texture);
             _sprite.Origin = (Vector2f)texture.Size / 2;
 
             if(Perent.GetComponent<AnimRender>() != null)
             {
-                Perent.GetComponent<AnimRender>().UpdateTexture(texture);
+                Perent.GetComponent<AnimRender>().UpdateTexture(TextureName);
             }
         }
         public IntRect GetTextureRect() => _sprite.TextureRect;
