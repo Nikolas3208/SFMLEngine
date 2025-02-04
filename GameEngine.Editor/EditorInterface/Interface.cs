@@ -29,9 +29,13 @@ namespace GameEngine.Editor.EditorInterface
 
         public Guid SelectGameObjectId { get; private set; }
 
+        private AssetsViewer AssetViewer;
+
+
         public Interface(EditorScene scene)
         {
             _scene = scene;
+            AssetViewer = new AssetsViewer(this, "Assets");
         }
 
         public void Draw()
@@ -88,7 +92,7 @@ namespace GameEngine.Editor.EditorInterface
         {
             ImGui.Begin("Properti");
 
-            if (_scelectCurrentAssetName == string.Empty)
+            if (ScelectCurrentAssetName == string.Empty)
             {
                 var gameObject = _scene.GetGameObjectById<GameObject>(SelectGameObjectId);
 
@@ -165,6 +169,8 @@ namespace GameEngine.Editor.EditorInterface
                                         var tx = AssetsMenager.GetAsset<SpriteAsset>(_textureName);
                                         gameObject.GetComponent<SpriteRender>().UpdateTexture(tx.GetTexture(), _textureName);
                                         gameObject.GetComponent<SpriteRender>().TextureName = tx.Name;
+
+                                        ImGui.CloseCurrentPopup();
                                     }
 
                                     ImGui.SetCursorPos(new Vector2(x * 78 + startPoint.X, y * 85 + startPoint.Y + 75));
@@ -226,10 +232,14 @@ namespace GameEngine.Editor.EditorInterface
                 }
 
                 ImGui.Spacing();
+                ImGui.Spacing();
+                float addComponetButtonSizeX = 0;
+                ImGui.SetCursorPosX((ImGui.GetWindowSize().X / 3) + addComponetButtonSizeX * 2);
                 if (ImGui.Button("Add component"))
                 {
                     ImGui.OpenPopup(InterfaceAction.AddComponent.ToString());
                 }
+                addComponetButtonSizeX = ImGui.GetItemRectSize().X;
 
                 if (ImGui.BeginPopup(InterfaceAction.AddComponent.ToString()))
                 {
@@ -303,7 +313,7 @@ namespace GameEngine.Editor.EditorInterface
             }
             else
             {
-                var asset = AssetsMenager.GetAsset<SpriteAsset>(_scelectCurrentAssetName);
+                var asset = AssetsMenager.GetAsset<SpriteAsset>(ScelectCurrentAssetName);
 
                 ImGui.Image((nint)asset.GetTexture().NativeHandle, new Vector2(128, 128));
                 ImGui.Spacing();
@@ -338,7 +348,7 @@ namespace GameEngine.Editor.EditorInterface
                     if(ImGui.Selectable(go.Name))
                     {
                         SelectGameObjectId = go.Id;
-                        _scelectCurrentAssetName = string.Empty;
+                        ScelectCurrentAssetName = string.Empty;
                     }
                 }
             }
@@ -357,7 +367,7 @@ namespace GameEngine.Editor.EditorInterface
                     {
                         GameObject go = new GameObject(_scene, "GameObject");
                         SelectGameObjectId = go.Id;
-                        _scelectCurrentAssetName = string.Empty;
+                        ScelectCurrentAssetName = string.Empty;
                         _scene.AddGameObject(go);
                     }
                 }
@@ -368,11 +378,13 @@ namespace GameEngine.Editor.EditorInterface
 
         private string _folder = "Assets";
         private int _idCurrentDir = 0;
-        private string _scelectCurrentAssetName = string.Empty;
+        public string ScelectCurrentAssetName = string.Empty;
 
         private void AssetsViewer()
         {
-            ImGui.Begin("Assets", ImGuiWindowFlags.AlwaysVerticalScrollbar);
+            AssetViewer.Draw();
+
+            /*ImGui.Begin("Assets", ImGuiWindowFlags.AlwaysVerticalScrollbar);
 
 
             var dirs = Directory.GetDirectories(_folder);
@@ -415,7 +427,8 @@ namespace GameEngine.Editor.EditorInterface
                 }
             }
 
-            ImGui.End();
+            ImGui.End();*/
         }
+            
     } 
 }

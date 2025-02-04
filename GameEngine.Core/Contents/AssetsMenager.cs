@@ -34,6 +34,21 @@ namespace GameEngine.Core.Contents
                 if (!_assets.ContainsKey(fileName))
                     _assets.Add(fileName, asset);
             }
+
+            files = Directory.GetFiles(_path, "*.jpg", SearchOption.AllDirectories);
+
+            foreach (var file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                fileName = fileName.Remove(fileName.Length - 4);
+
+                SpriteAsset asset = new SpriteAsset(new Texture(file));
+                asset.Name = fileName;
+                asset.FullPath = file;
+
+                if (!_assets.ContainsKey(fileName))
+                    _assets.Add(fileName, asset);
+            }
         }
 
         public static IAsset? GetAsset(string key)
