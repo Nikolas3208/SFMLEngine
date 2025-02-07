@@ -11,7 +11,7 @@ namespace GameEngine.Editor
     public class EditorApplication : Application
     {
         private Texture _renderWindowTexture;
-        private Interface _interface;
+        private EditorInterface.EditorInterface _interface;
         private EditorScene _scene;
         public EditorApplication(WindowSettings settings) : base(settings)
         {
@@ -23,7 +23,7 @@ namespace GameEngine.Editor
 
             _renderWindowTexture = new Texture(settings.VideoMode.Width, settings.VideoMode.Height);
 
-            _interface = new Interface(_scene);
+            _interface = new EditorInterface.EditorInterface(_scene);
         }
 
         public override void Update(Time deltaTime)

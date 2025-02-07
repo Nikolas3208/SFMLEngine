@@ -21,21 +21,23 @@ namespace GameEngine.Editor.EditorInterface
         AddComponent
     }
 
-    public class Interface
+    public class EditorInterface
     {
-        private EditorScene _scene;
+        public EditorScene Scene { get; set; }
 
         public nint SceneTexture;
 
-        public Guid SelectGameObjectId { get; private set; }
+        public Guid SelectGameObjectId { get; set; }
 
         private AssetsViewer AssetViewer;
+        private PropertieViewer PropertieViewer;
 
 
-        public Interface(EditorScene scene)
+        public EditorInterface(EditorScene scene)
         {
-            _scene = scene;
+            Scene = scene;
             AssetViewer = new AssetsViewer(this, "Assets");
+            PropertieViewer = new PropertieViewer(this);
         }
 
         public void Draw()
@@ -44,9 +46,9 @@ namespace GameEngine.Editor.EditorInterface
 
             MenuBar();
             SceneViewer();
-            PropertiViewer();
+            PropertieViewer.Draw();
             SceneTreeViewer();
-            AssetsViewer();
+            AssetViewer.Draw();
         }
 
         private void MenuBar()
@@ -88,13 +90,13 @@ namespace GameEngine.Editor.EditorInterface
         private string _animName = string.Empty;
         private int _addAnimCurrentFrame = -1;
         private AnimRender animRender;
-        private void PropertiViewer()
+        private void PropertiViewer2()
         {
             ImGui.Begin("Properti");
 
             if (ScelectCurrentAssetName == string.Empty)
             {
-                var gameObject = _scene.GetGameObjectById<GameObject>(SelectGameObjectId);
+                var gameObject = Scene.GetGameObjectById<GameObject>(SelectGameObjectId);
 
                 if (gameObject == null)
                 {
@@ -154,7 +156,7 @@ namespace GameEngine.Editor.EditorInterface
                                 ImGui.Spacing();
 
 
-                                for (int i = 0; i < AssetsMenager.GetAssetCount(); i++)
+                                for (int i = 0; i < AssetsMenager.GetAssetsCount(); i++)
                                 {
                                     int y = i / 3;
                                     int x = i - (y * 3);
@@ -162,13 +164,13 @@ namespace GameEngine.Editor.EditorInterface
                                     string localName = AssetsMenager.GetAssetKeyByIndex(i);
 
                                     ImGui.SetCursorPos(new Vector2(x * 78 + startPoint.X, y * 85 + startPoint.Y));
-                                    if (ImGui.ImageButton((nint)AssetsMenager.GetAsset<SpriteAsset>(AssetsMenager.GetAssetKeyByIndex(i)).GetTexture().NativeHandle, new Vector2(64, 64)))
+                                    if (ImGui.ImageButton((nint)AssetsMenager.GetAsset<ImageAsset>(AssetsMenager.GetAssetKeyByIndex(i)).Texture!.NativeHandle, new Vector2(64, 64)))
                                     {
                                         _textureName = localName;
 
-                                        var tx = AssetsMenager.GetAsset<SpriteAsset>(_textureName);
-                                        gameObject.GetComponent<SpriteRender>().UpdateTexture(tx.GetTexture(), _textureName);
-                                        gameObject.GetComponent<SpriteRender>().TextureName = tx.Name;
+                                        var asset = AssetsMenager.GetAsset<ImageAsset>(_textureName);
+                                       // gameObject.GetComponent<SpriteRender>().UpdateTexture(asset.Texture!, _textureName);
+                                       // gameObject.GetComponent<SpriteRender>().SpriteName = asset.Name;
 
                                         ImGui.CloseCurrentPopup();
                                     }
@@ -313,16 +315,16 @@ namespace GameEngine.Editor.EditorInterface
             }
             else
             {
-                var asset = AssetsMenager.GetAsset<SpriteAsset>(ScelectCurrentAssetName);
+                var asset = AssetsMenager.GetAsset<ImageAsset>(ScelectCurrentAssetName);
 
-                ImGui.Image((nint)asset.GetTexture().NativeHandle, new Vector2(128, 128));
+                ImGui.Image((nint)asset.Texture!.NativeHandle, new Vector2(64, 64));
                 ImGui.Spacing();
                 ImGui.LabelText(asset.Name, "Asset name: ");
                 ImGui.Spacing();
                 bool multuplay = asset.IsMultiplaySprite;
                 if(ImGui.Checkbox("Multiplay sprite", ref multuplay))
                     asset.IsMultiplaySprite = multuplay;
-                if (multuplay) 
+                if (asset.IsMultiplaySprite) 
                 {
                     ImGui.Spacing();
                     bool countOrSize = asset.SpriteSheet.AbIsCount;
@@ -343,7 +345,7 @@ namespace GameEngine.Editor.EditorInterface
 
             if(ImGui.TreeNodeEx("GameObjects", ImGuiTreeNodeFlags.DefaultOpen))
             {
-                foreach(var go in _scene.GetGameObjects())
+                foreach(var go in Scene.GetGameObjects())
                 {
                     if(ImGui.Selectable(go.Name))
                     {
@@ -365,10 +367,10 @@ namespace GameEngine.Editor.EditorInterface
                 {
                     if(ImGui.MenuItem("GameObject"))
                     {
-                        GameObject go = new GameObject(_scene, "GameObject");
+                        GameObject go = new GameObject(Scene, "GameObject");
                         SelectGameObjectId = go.Id;
                         ScelectCurrentAssetName = string.Empty;
-                        _scene.AddGameObject(go);
+                        Scene.AddGameObject(go);
                     }
                 }
             }
@@ -382,7 +384,7 @@ namespace GameEngine.Editor.EditorInterface
 
         private void AssetsViewer()
         {
-            AssetViewer.Draw();
+            //AssetsViewer.Draw();
 
             /*ImGui.Begin("Assets", ImGuiWindowFlags.AlwaysVerticalScrollbar);
 

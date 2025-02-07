@@ -8,8 +8,11 @@ namespace GameEngine.Core.Contents
 {
     public enum AssetType
     {
+        None,
+        Image,
         Sprite,
         SpriteSheet,
-        Sound
+        Sound,
+        Text
     }
 }

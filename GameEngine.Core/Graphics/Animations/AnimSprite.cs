@@ -80,13 +80,16 @@ namespace GameEngine.Core.Graphics.Animations
 
         public void UpdateSpriteSheet(SpriteSheet spriteSheet)
         {
-            ss.SetTexture(spriteSheet.GetTexture());
+            //ss.SetTexture(spriteSheet.GetTexture());
             ss = spriteSheet;
         }
 
-        internal void AddAnimation(object name, Animation animation)
+        public Animation GetAnimationByName(string name)
         {
-            throw new NotImplementedException();
+            if (animations.ContainsKey(name))
+                return animations[name];
+
+            return null;
         }
     }
 }

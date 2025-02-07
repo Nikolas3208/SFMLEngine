@@ -17,7 +17,7 @@ namespace GameEngine.Editor.EditorInterface
         private List<string> _paths = [];
         private nint _folderIcon = 0;
         private nint _textFileIcon = 0;
-        private Interface _interface;
+        private EditorInterface _interface;
         private int _currentPath = 0;
         private string[] _comboPaths = [];
 
@@ -31,93 +31,96 @@ namespace GameEngine.Editor.EditorInterface
             }
         }
 
-        public AssetsViewer(Interface @interface, string path)
+        public AssetsViewer(EditorInterface @interface, string path)
         {
             _interface = @interface;
             CurrentFolder = path;
-            _folderIcon = (nint)AssetsMenager.GetAsset<SpriteAsset>("folder_icon").GetTexture().NativeHandle;
-            _textFileIcon = (nint)AssetsMenager.GetAsset<SpriteAsset>("text_icon").GetTexture().NativeHandle;
+            _folderIcon = (nint)AssetsMenager.GetAsset<ImageAsset>("folder_icon").Texture!.NativeHandle;
+            _textFileIcon = (nint)AssetsMenager.GetAsset<ImageAsset>("text_icon").Texture!.NativeHandle;
         }
 
         public void AssetsView()
         {
-            ImGui.Begin("Assets");
-
-            var startPos = ImGui.GetCursorPos();
-
-            if (ImGui.Combo("path", ref _currentPath, _comboPaths, _comboPaths.Length) && _currentPath != 0)
+            if (ImGui.Begin("Assets"))
             {
-                CurrentFolder = _comboPaths[_currentPath];
-                _currentPath = 0;
-            }
-            var comboSize = ImGui.GetItemRectSize();
-            ImGui.SetCursorPos(new Vector2(startPos.X + comboSize.X + 10, startPos.Y));
-            if(ImGui.Button("Brek") && _comboPaths.Length > 1)
-            {
-                CurrentFolder = _comboPaths[1];
-            }
 
-            startPos = ImGui.GetCursorPos();
-            int y = 0;
-            int x = 0;
-            for(int i = 0; i < _paths.Count; i++)
-            {
-                if (startPos.X + x * 75 > ImGui.GetWindowWidth() - 75)
+                var startPos = ImGui.GetCursorPos();
+
+                if (ImGui.Combo("path", ref _currentPath, _comboPaths, _comboPaths.Length) && _currentPath != 0)
                 {
-                    x = 0;
-                    y++;
+                    CurrentFolder = _comboPaths[_currentPath];
+                    _currentPath = 0;
                 }
-                ImGui.SetCursorPos(new Vector2(startPos.X + x * 75, startPos.Y + 20 * y + (y * 75)));
-                if (!_paths[i].Contains('.'))
+                var comboSize = ImGui.GetItemRectSize();
+                ImGui.SetCursorPos(new Vector2(startPos.X + comboSize.X + 10, startPos.Y));
+                if (ImGui.Button("Brek") && _comboPaths.Length > 1)
                 {
-                    ImGui.PushID(_paths[i]);
-                    if (ImGui.ImageButton(_folderIcon, new Vector2(64, 64)))
+                    CurrentFolder = _comboPaths[1];
+                }
+
+                startPos = ImGui.GetCursorPos();
+                int y = 0;
+                int x = 0;
+                for (int i = 0; i < _paths.Count; i++)
+                {
+                    if (startPos.X + x * 75 > ImGui.GetWindowWidth() - 75)
                     {
-                        CurrentFolder += "\\" + _paths[i];
-                        return;
+                        x = 0;
+                        y++;
                     }
-                    if (ImGui.IsItemHovered())
-                        ImGui.SetTooltip(_paths[i]);
-                }
-                else if(_paths[i].Contains(".png") || _paths[i].Contains(".jpg"))
-                {
-                    var txImage = (nint)AssetsMenager.GetAsset<SpriteAsset>(_paths[i].Remove(_paths[i].IndexOf('.'))).GetTexture().NativeHandle;
-
-                    ImGui.PushID(_paths[i]);
-                    if(ImGui.ImageButton(txImage, new Vector2(64, 64)))
+                    ImGui.SetCursorPos(new Vector2(startPos.X + x * 75, startPos.Y + 20 * y + (y * 75)));
+                    if (!_paths[i].Contains('.'))
                     {
-                        _interface.ScelectCurrentAssetName = _paths[i].Remove(_paths[i].IndexOf("."));
+                        ImGui.PushID(_paths[i]);
+                        if (ImGui.ImageButton(_folderIcon, new Vector2(64, 64)))
+                        {
+                            CurrentFolder += "\\" + _paths[i];
+                            return;
+                        }
+                        if (ImGui.IsItemHovered())
+                            ImGui.SetTooltip(_paths[i]);
                     }
-                    if (ImGui.IsItemHovered())
-                        ImGui.SetTooltip(_paths[i]);
-                }
-                else
-                {
-                    ImGui.PushID(_paths[i]);
-                    if (ImGui.ImageButton(_textFileIcon, new Vector2(64, 64)))
+                    else if (_paths[i].Contains(".png") || _paths[i].Contains(".jpg"))
                     {
+                        var txImage = (nint)AssetsMenager.GetAsset<ImageAsset>(_paths[i].Remove(_paths[i].IndexOf('.'))).Texture!.NativeHandle;
 
+                        ImGui.PushID(_paths[i]);
+                        if (ImGui.ImageButton(txImage, new Vector2(64, 64)))
+                        {
+                            _interface.ScelectCurrentAssetName = _paths[i].Remove(_paths[i].IndexOf("."));
+                            _interface.SelectGameObjectId = Guid.Empty;
+                        }
+                        if (ImGui.IsItemHovered())
+                            ImGui.SetTooltip(_paths[i]);
                     }
-                    if (ImGui.IsItemHovered())
-                        ImGui.SetTooltip(_paths[i]);
-                }
-                string name = "";
-                if (_paths[i].Length > 7)
-                {
-                    name = _paths[i].Remove(7);
-                    name += "...";
-                }
-                else
-                    name = _paths[i];
-                var textPos = ImGui.GetCursorPos();
+                    else
+                    {
+                        ImGui.PushID(_paths[i]);
+                        if (ImGui.ImageButton(_textFileIcon, new Vector2(64, 64)))
+                        {
 
-                ImGui.SetCursorPos(new Vector2(startPos.X + x * 75, textPos.Y - 75 * y + (y * 75)));
-                ImGui.Text(name);
+                        }
+                        if (ImGui.IsItemHovered())
+                            ImGui.SetTooltip(_paths[i]);
+                    }
+                    string name = "";
+                    if (_paths[i].Length > 7)
+                    {
+                        name = _paths[i].Remove(7);
+                        name += "...";
+                    }
+                    else
+                        name = _paths[i];
+                    var textPos = ImGui.GetCursorPos();
 
-                x++;
+                    ImGui.SetCursorPos(new Vector2(startPos.X + x * 75, textPos.Y - 75 * y + (y * 75)));
+                    ImGui.Text(name);
+
+                    x++;
+                }
+
+                ImGui.End();
             }
-
-            ImGui.End();
         }
 
         public void Update(string currentPath)

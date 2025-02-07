@@ -16,11 +16,13 @@ namespace GameEngine.Core.GameObjects.Components
         private IGameObject _gameObject;
         private Sprite _sprite;
         private bool _draw = true;
+        private Color _color = Color.White;
 
         public Guid Id { get => _id; set => _id = value; }
         public string Name { get => _name; set => _name = value; }
         public IGameObject Perent { get => _gameObject; set => _gameObject = value; }
-        public string TextureName { get; set; }
+        public string SpriteName { get; set; } = string.Empty;
+        public Color Color { get => _color; set { _sprite.Color = value; _color = value; } }
 
         public SpriteRender(IGameObject perent)
         {
@@ -49,26 +51,15 @@ namespace GameEngine.Core.GameObjects.Components
         }
 
         public Texture GetTexture() => _sprite.Texture;
-        public void UpdateTexture(Texture texture, string name)
-        {
-            TextureName = name;
-            _sprite = new Sprite(texture);
-            _sprite.Origin = (Vector2f)texture.Size / 2;
-
-            if(Perent.GetComponent<AnimRender>() != null)
-            {
-                Perent.GetComponent<AnimRender>().UpdateTexture(TextureName);
-            }
-        }
-        public IntRect GetTextureRect() => _sprite.TextureRect;
-        public void UpdateTextureRect(IntRect textureRect)
+        public IntRect GetSpriteRect() => _sprite.TextureRect;
+        public void UpdateSpriteRect(IntRect textureRect)
         {
             _sprite.TextureRect = textureRect;
         }
         
         public void Start()
         {
-            
+
         }
 
         public void Update(Time deltaTime)
@@ -83,6 +74,15 @@ namespace GameEngine.Core.GameObjects.Components
         {
             if (_draw)
                 _sprite.Draw(target, states);
+        }
+
+        public void UpdateSprite(Sprite? sprite)
+        {
+            if(sprite != null)
+            {
+                _sprite = sprite;
+                _sprite.Color = _color;
+            }
         }
     }
 }

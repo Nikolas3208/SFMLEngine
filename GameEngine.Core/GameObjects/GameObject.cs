@@ -52,9 +52,12 @@ namespace GameEngine.Core.GameObjects
 
         public void AddComponent(IComponent component)
         {
-            _components.Add(component);
+            if (_components.Where(c => c.Name == component.Name).Count() == 0)
+            {
+                _components.Add(component);
 
-            Start();
+                Start();
+            }
         }
 
         public void AddComponent(ComponentType component)

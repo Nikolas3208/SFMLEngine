@@ -16,6 +16,12 @@ namespace GameEngine.Editor
 
         public override void Start()
         {
+            GameObject gameObject = new GameObject(this, "Fire");
+            gameObject.AddComponent(ComponentType.SpriteRender);
+            gameObject.AddComponent(ComponentType.AnimRender);
+
+            AddGameObject(gameObject);
+
             base.Start();
         }
         public override void Draw(RenderTarget target, RenderStates states)
