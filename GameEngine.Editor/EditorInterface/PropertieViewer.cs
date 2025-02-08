@@ -1,7 +1,9 @@
 ﻿using GameEngine.Core.Contents;
+using GameEngine.Core.Contents.Assets;
 using GameEngine.Core.GameObjects;
 using GameEngine.Core.GameObjects.Components;
 using GameEngine.Core.Graphics.Animations;
+using GameEngine.Core.Utils.ImGuiImple;
 using ImGuiNET;
 using SFML.Graphics;
 using SFML.System;
@@ -54,7 +56,7 @@ namespace GameEngine.Editor.EditorInterface
 
                     GameObjectPropertie(_gameObject);
                 }
-                else if(_interface.ScelectCurrentAssetName != string.Empty)
+                else if (_interface.ScelectCurrentAssetName != string.Empty)
                 {
                     var asset = AssetsMenager.GetAsset(_interface.ScelectCurrentAssetName);
 
@@ -71,7 +73,6 @@ namespace GameEngine.Editor.EditorInterface
             {
                 case AssetType.Image:
                 case AssetType.Sprite:
-                case AssetType.SpriteSheet:
                     ImageAssetPropertie((ImageAsset)asset);
                     break;
             }
@@ -79,26 +80,27 @@ namespace GameEngine.Editor.EditorInterface
 
         private void ImageAssetPropertie(ImageAsset asset)
         {
+            bool isSprite = asset.IsSprite;
+
             ImGui.Text(asset.Name);
             ImGui.Spacing();
             ImGui.Image((nint)asset.Texture!.NativeHandle, new Vector2(64, 64));
             ImGui.Spacing();
-            bool isSprite = asset.IsSprite;
-            if(ImGui.Checkbox("Sprite", ref isSprite))
+            if (ImGui.Checkbox("Sprite", ref isSprite))
                 asset.IsSprite = isSprite;
             ImGui.Spacing();
 
             if (asset.IsSprite)
             {
                 bool isMultiplaySprite = asset.IsMultiplaySprite;
-                if(ImGui.Checkbox("Multiplay", ref isMultiplaySprite))
+                if (ImGui.Checkbox("Multiplay", ref isMultiplaySprite))
                     asset.IsMultiplaySprite = isMultiplaySprite;
                 ImGui.Spacing();
 
                 if (asset.IsMultiplaySprite)
                 {
                     bool abIsCount = asset.SpriteSheet!.AbIsCount;
-                    if(ImGui.Checkbox("AbIsCount", ref abIsCount))
+                    if (ImGui.Checkbox("AbIsCount", ref abIsCount))
                         asset.SpriteSheet.AbIsCount = abIsCount;
                     ImGui.Spacing();
                     Vector2 tileSize = new Vector2(asset.SpriteSheet!.GetTileSize().X, asset.SpriteSheet!.GetTileSize().Y);
@@ -146,36 +148,59 @@ namespace GameEngine.Editor.EditorInterface
                     ImGui.TreePop();
                 }
 
-                foreach(var component in gameObject.GetComponents())
+
+                foreach (var component in gameObject.GetComponents())
                 {
-                    if(ImGui.TreeNodeEx(component.Name, ImGuiTreeNodeFlags.DefaultOpen))
+                    bool clouse = false;
+
+                    if (ImGuiImpl.ClosedTreeNodeEx(component.Name, ImGuiTreeNodeFlags.DefaultOpen, ref clouse))
                     {
-                        if(component.GetType() == typeof(SpriteRender))
+                        if(clouse)
+                        {
+                            gameObject.RemoveComponent(component);
+                            break;
+                        }
+                        if (component.GetType() == typeof(SpriteRender))
                         {
                             var spriteRender = (SpriteRender)component;
+
+                            bool flipX = spriteRender.FlipX;
+                            bool flipY = spriteRender.FlipY;
 
                             ImGui.Spacing();
                             float spriteButtonY = ImGui.GetCursorPos().Y;
                             ImGui.Text("Sprite: ");
-                            float spriteButtonSizeX = 0;
+                            float textSpriteSizeX = ImGui.GetItemRectSize().X;
 
-                            ImGui.SetCursorPos(new Vector2((ImGui.GetWindowSize().X - 50) - spriteButtonSizeX * 2, spriteButtonY));
+                            ImGui.SetCursorPos(new Vector2(textSpriteSizeX + 50, spriteButtonY));
 
                             string spriteName = spriteRender.SpriteName != string.Empty ? spriteRender.SpriteName : "None";
-                            if(ImGui.Button(spriteName))
+                            if (ImGui.Button(spriteName))
                             {
                                 _openSelectImage = true;
                             }
-                            spriteButtonSizeX = ImGui.GetItemRectSize().X;
                             ImGui.Spacing();
-                            spriteButtonY = ImGui.GetCursorPos().Y;
+                            float textColorPosX = ImGui.GetCursorPos().Y;
                             ImGui.Text("Color: ");
-                            ImGui.SetCursorPos(new Vector2(ImGui.GetWindowSize().X - 10 - spriteButtonSizeX, spriteButtonY));
-                            if(ImGui.ColorButton("  ", _spriteRenderColor))
+                            float textColorSizeX = ImGui.GetItemRectSize().X;
+                            ImGui.SetCursorPos(new Vector2(textColorSizeX + 50, textColorPosX));
+                            if (ImGui.ColorButton("  ", _spriteRenderColor))
                             {
                                 _openColorPicker = true;
                             }
-                            spriteButtonSizeX = ImGui.GetItemRectSize().X;
+
+                            ImGui.Spacing();
+                            var flipPos = ImGui.GetCursorPos();
+                            ImGui.Text("Flip ");
+                            float flipTextSizeX = ImGui.GetItemRectSize().X;
+                            ImGuiImpl.CheckBox("X", ref flipX, new Vector2(flipPos.X + 40 + flipTextSizeX, flipPos.Y));
+
+                            float flipXSizeX = ImGui.GetItemRectSize().X;
+
+                            ImGuiImpl.CheckBox("Y", ref flipY, new Vector2(flipPos.X + 40 + flipTextSizeX + 10 + flipXSizeX, flipPos.Y));
+
+                            spriteRender.FlipX = flipX;
+                            spriteRender.FlipY = flipY;
                         }
                         else if (component.GetType() == typeof(AnimRender))
                         {
@@ -213,12 +238,18 @@ namespace GameEngine.Editor.EditorInterface
 
                         ImGui.TreePop();
                     }
+
+                    if (clouse)
+                    {
+                        gameObject.RemoveComponent(component);
+                        break;
+                    }
                 }
 
                 ImGui.TreePop();
             }
 
-            if(ImGui.Button("Add component"))
+            if (ImGui.Button("Add component"))
             {
                 _openAddComponent = true;
             }
@@ -251,16 +282,16 @@ namespace GameEngine.Editor.EditorInterface
                         y++;
                     }
 
-                    ImGui.SetCursorPos(new Vector2(startPos.X + x * 75, startPos.Y + (y * 75) + (20 * y)));
+                    ImGui.SetCursorPos(new Vector2(startPos.X + x * 75, startPos.Y + y * 75 + 20 * y));
 
                     var asset = AssetsMenager.GetAssetByIndex<ImageAsset>(i, keySearch: _selectImageSearch, type: AssetType.Sprite);
                     if (ImGui.ImageButton((nint)asset.Texture!.NativeHandle, new Vector2(64, 64)))
                     {
                         if (_gameObject != null)
                         {
-                            if (asset.Sprite != null)
+                            if (asset.IsSprite)
                             {
-                                _gameObject.GetComponent<SpriteRender>().UpdateSprite(asset.Sprite);
+                                _gameObject.GetComponent<SpriteRender>().UpdateSprite(asset.Sprite!);
                                 _gameObject.GetComponent<SpriteRender>().SpriteName = asset.Name;
                             }
                         }
@@ -278,7 +309,7 @@ namespace GameEngine.Editor.EditorInterface
                     }
                     var textPos = ImGui.GetCursorPos();
 
-                    ImGui.SetCursorPos(new Vector2(startPos.X + x * 75, textPos.Y - 75 * y + (y * 75)));
+                    ImGui.SetCursorPos(new Vector2(startPos.X + x * 75, textPos.Y - 75 * y + y * 75));
                     ImGui.Text(name);
 
                     x++;
@@ -318,15 +349,15 @@ namespace GameEngine.Editor.EditorInterface
                 _openAddComponent = false;
             }
 
-            if(ImGui.BeginPopup("Add component"))
+            if (ImGui.BeginPopup("Add component"))
             {
                 ImGui.InputText("Components search", ref _componentsSearch, 50);
 
                 var componets = _components.Where(c => c.ToLower().Contains(_componentsSearch.ToLower())).ToArray();
                 int idComponentSelect = 0;
-                if(ImGui.Combo("Components", ref idComponentSelect, componets, componets.Length))
+                if (ImGui.Combo("Components", ref idComponentSelect, componets, componets.Length))
                 {
-                    _gameObject.AddComponent((ComponentType)idComponentSelect);
+                    _gameObject.AddComponent((ComponentType)Enum.Parse(typeof(ComponentType), componets[idComponentSelect]));
 
                     ImGui.CloseCurrentPopup();
                 }
@@ -335,14 +366,14 @@ namespace GameEngine.Editor.EditorInterface
 
         private void OpenEditAnimation()
         {
-            if(_openEditAnimation)
+            if (_openEditAnimation)
             {
                 ImGui.OpenPopup("Edit animation");
 
                 _openEditAnimation = false;
             }
 
-            if(ImGui.BeginPopup("Edit animation"))
+            if (ImGui.BeginPopup("Edit animation"))
             {
                 var animRender = _gameObject.GetComponent<AnimRender>();
                 if (animRender != null)
@@ -392,31 +423,31 @@ namespace GameEngine.Editor.EditorInterface
 
         private void OpenAddAnimation()
         {
-            if(_openAddAnimation)
+            if (_openAddAnimation)
             {
                 ImGui.OpenPopup("Add animation");
                 _openAddAnimation = false;
             }
 
-            if(ImGui.BeginPopup("Add animation", ImGuiWindowFlags.Popup))
+            if (ImGui.BeginPopup("Add animation", ImGuiWindowFlags.Popup))
             {
                 var animRender = _gameObject.GetComponent<AnimRender>();
 
                 string[] ids = new string[_frames.Count];
 
-                foreach (var frame in _frames)
-                    ids[frame.i] = frame.i.ToString();
+                for(int i = 0; i < _frames.Count; i++)
+                    ids[i] = i.ToString();
 
                 string name = _addAnimationName;
                 ImGui.InputText("Anim name: ", ref name, 50);
                 _addAnimationName = name;
 
-                if(ImGui.Combo("frames", ref _setCurrentFrame, ids, ids.Length))
+                if (ImGui.Combo("frames", ref _setCurrentFrame, ids, ids.Length))
                 {
 
                 }
 
-                if(_frames.Count > 0)
+                if (_frames.Count > 0)
                 {
                     ImGui.Spacing();
                     ImGui.Spacing();
@@ -430,17 +461,18 @@ namespace GameEngine.Editor.EditorInterface
                 }
 
                 //ImGui.SetCursorPosY(ImGui.GetWindowSize().Y);
-                if(ImGui.Button("Add frame"))
+                if (ImGui.Button("Add frame"))
                 {
                     _frames.Add(new AnimationFrame(_frames.Count, 0.5f));
                 }
 
-                if(ImGui.Button("Aplay"))
+                if (ImGui.Button("Aplay"))
                 {
                     animRender.AddAnimation(_addAnimationName, new Animation(_frames.ToArray()));
                     animRender.SetAnimPlay(_addAnimationName);
-                    
+
                     _frames.Clear();
+                    _setCurrentFrame = 0;
 
                     ImGui.CloseCurrentPopup();
                 }

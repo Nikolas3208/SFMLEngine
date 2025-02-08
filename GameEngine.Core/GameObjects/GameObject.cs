@@ -70,6 +70,9 @@ namespace GameEngine.Core.GameObjects
                 case ComponentType.AnimRender:
                     AddComponent(new AnimRender(this));
                     break;
+                case ComponentType.Audio:
+                    AddComponent(new Audio(this));
+                    break;
             }
         }
 

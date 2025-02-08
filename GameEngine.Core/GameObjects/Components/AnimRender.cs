@@ -1,8 +1,10 @@
 ﻿using GameEngine.Core.Contents;
+using GameEngine.Core.Contents.Assets;
 using GameEngine.Core.Graphics;
 using GameEngine.Core.Graphics.Animations;
 using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,22 +31,20 @@ namespace GameEngine.Core.GameObjects.Components
 
         public void Start()
         {
-            if (Perent.GetComponent<SpriteRender>() != null && Perent.GetComponent<SpriteRender>().GetTexture() != null)
+            if (_spriteSheet == null && _animSprite == null)
             {
-                var asset = AssetsMenager.GetAsset<ImageAsset>(Perent.GetComponent<SpriteRender>().SpriteName);
-                if (asset != null)
+                if (Perent.GetComponent<SpriteRender>() != null)
                 {
-                    if (asset.SpriteSheet != null)
+                    var name = Perent.GetComponent<SpriteRender>().SpriteName;
+
+                    if (name != null && name != "")
                     {
-                        _spriteSheet = asset.SpriteSheet;
-                        _animSprite = new AnimSprite(_spriteSheet);
-                        _animSprite.Origin = (Vector2f)_spriteSheet.GetTileSize() / 2;
-                    }
-                    else
-                    {
-                        _spriteSheet = new SpriteSheet(asset.Texture!, asset.IsSmooth);
-                        _animSprite = new AnimSprite(_spriteSheet);
-                        _animSprite.Origin = (Vector2f)_spriteSheet.GetTileSize() / 2;
+                        _spriteSheet = AssetsMenager.GetAsset<ImageAsset>(name).SpriteSheet!;
+
+                        if (_spriteSheet != null)
+                        {
+                            _animSprite = new AnimSprite(_spriteSheet);
+                        }
                     }
                 }
             }
@@ -52,23 +52,6 @@ namespace GameEngine.Core.GameObjects.Components
 
         public void Update(Time deltaTime)
         {
-            var fireAsset = AssetsMenager.GetAsset<ImageAsset>("Fire");
-
-            if (fireAsset != null)
-            {
-                _spriteSheet = fireAsset.SpriteSheet;
-                if (_spriteSheet != null && _animSprite != null)
-                {
-                    _animSprite.UpdateSpriteSheet(_spriteSheet);
-                    _animSprite.Origin = (Vector2f)_spriteSheet.GetTileSize() / 2;
-                }
-                else if (_spriteSheet != null && _animSprite == null)
-                {
-                    _animSprite = new AnimSprite(_spriteSheet);
-                    _animSprite.Origin = (Vector2f)_spriteSheet.GetTileSize() / 2;
-                }
-            }
-
             if (_animSprite != null)
                 _animSprite.Play(currentAnim);
         }
@@ -96,21 +79,6 @@ namespace GameEngine.Core.GameObjects.Components
         {
             if (_animSprite != null)
                 _animSprite.AddAnimation(name, animation);
-        }
-
-        public void UpdateTexture(string textureName)
-        {
-            var asset = AssetsMenager.GetAsset<ImageAsset>(textureName);
-            if (asset.SpriteSheet != null && _animSprite != null)
-            {
-                _spriteSheet = asset.SpriteSheet;
-                _animSprite.UpdateSpriteSheet(_spriteSheet);
-            }
-            else if(asset.SpriteSheet == null && _animSprite != null)
-            {
-                _spriteSheet = new SpriteSheet(asset.Texture!, asset.IsSmooth);
-                _animSprite.UpdateSpriteSheet(_spriteSheet);
-            }
         }
 
         public Animation GetAnimationByName(string name)

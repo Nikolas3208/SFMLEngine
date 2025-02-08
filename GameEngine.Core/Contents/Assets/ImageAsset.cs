@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameEngine.Core.Contents
+namespace GameEngine.Core.Contents.Assets
 {
     public class ImageAsset : Asset
     {
@@ -20,16 +20,16 @@ namespace GameEngine.Core.Contents
         private bool _isSmooth = false;
 
         public Texture? Texture { get { return _texture; } }
-        public Sprite? Sprite {  get { return _sprite; } }
+        public Sprite? Sprite { get { return _sprite; } }
         public SpriteSheet? SpriteSheet { get { return _spriteSheet; } }
 
-        public bool IsSprite 
+        public bool IsSprite
         {
             get => _isSprite;
             set
             {
                 _isSprite = value;
-                if(value)
+                if (value)
                 {
                     Type = AssetType.Sprite;
                     _sprite = new Sprite(_texture);
@@ -44,39 +44,27 @@ namespace GameEngine.Core.Contents
         public bool IsMultiplaySprite
         {
             get => _isMultiplaySprite;
-            set 
+            set
             {
-                if(value && _isSprite)
-                {
-                    Type = AssetType.SpriteSheet;
-                    _isMultiplaySprite = true;
-                    _spriteSheet = new SpriteSheet(_texture!, IsSmooth);
+                _isMultiplaySprite = value;
 
-                    _sprite = null;
+                if(value)
+                {
+                    if(_sprite == null)
+                        _sprite = new Sprite(_texture);
+                    _spriteSheet = new SpriteSheet(_sprite, _isSmooth);
                 }
-                else if(!value && _isSprite)
+                else
                 {
-                    Type = AssetType.Sprite;
-                    _isMultiplaySprite = false;
-
-                    _spriteSheet = null;    
-
-                    _sprite = new Sprite(Texture);
-                    _sprite.Origin = (Vector2f)_texture!.Size / 2;
-                }
-                else if(!value && !_isSprite)
-                {
-                    Type = AssetType.Image;
-
                     _sprite = null;
                     _spriteSheet = null;
                 }
             }
         }
-        public bool IsSmooth 
+        public bool IsSmooth
         {
             get => _isSmooth;
-            set { _isSmooth = value; _texture!.Smooth = value; } 
+            set { _isSmooth = value; _texture!.Smooth = value; }
         }
 
         public ImageAsset(Texture texture, string name)

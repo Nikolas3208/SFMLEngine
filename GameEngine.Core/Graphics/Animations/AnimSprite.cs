@@ -68,6 +68,7 @@ namespace GameEngine.Core.Graphics.Animations
             if (animations.Count > 0)
             {
                 rectShape.TextureRect = GetTextureRect();
+                rectShape.Scale = ss.GetSprite().Scale;
 
                 states.Transform *= Transform;
                 target.Draw(rectShape, states);

@@ -11,6 +11,7 @@ namespace GameEngine.Core.GameObjects.Components
         None,
         SpriteRender,
         AnimRender,
-        TextRender
+        TextRender,
+        Audio
     }
 }

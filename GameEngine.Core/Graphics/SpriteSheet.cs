@@ -25,11 +25,11 @@ namespace GameEngine.Core.Graphics
         private int _borderSize;
         private bool _abIsCount;
 
-        private Texture _texture;
-        public SpriteSheet(Texture texture, bool isSmooth = false)
+        private Sprite _sprite;
+        public SpriteSheet(Sprite sprite, bool isSmooth = false)
         {
-            _texture = texture;
-            _texture.Smooth = isSmooth;
+            _sprite = sprite;
+            _sprite.Texture.Smooth = isSmooth;
 
             SubWidth = 16;
             SubHeight = 16;
@@ -47,10 +47,10 @@ namespace GameEngine.Core.Graphics
         /// <param name="borderSize">Толщина рамки между фрагментами</param>
         /// <param name="texW">Ширина текстуры</param>
         /// <param name="texH">Высота текстуры</param>
-        public SpriteSheet(int a, int b, bool abIsCount, int borderSize, Texture texture, bool isSmooth = false)
+        public SpriteSheet(int a, int b, bool abIsCount, int borderSize, Sprite sprite, bool isSmooth = false)
         {
-            _texture = texture;
-            _texture.Smooth = isSmooth;
+            _sprite = sprite;
+            _sprite.Texture.Smooth = isSmooth;
 
             _abIsCount = abIsCount;
 
@@ -65,8 +65,8 @@ namespace GameEngine.Core.Graphics
             // a и b - это кол-во фрагментов по X и Y?
             if (abIsCount)
             {
-                SubWidth = (int)Math.Ceiling((float)texture.Size.X / a);
-                SubHeight = (int)Math.Ceiling((float)texture.Size.Y / b);
+                SubWidth = (int)Math.Ceiling((float)sprite.Texture.Size.X / a);
+                SubHeight = (int)Math.Ceiling((float)sprite.Texture.Size.Y / b);
                 SubCountX = a;
                 SubCountY = b;
             }
@@ -74,23 +74,25 @@ namespace GameEngine.Core.Graphics
             {
                 SubWidth = a;
                 SubHeight = b;
-                SubCountX = (int)Math.Ceiling((float)texture.Size.X / a);
-                SubCountY = (int)Math.Ceiling((float)texture.Size.Y / b);
+                SubCountX = (int)Math.Ceiling((float)sprite.Texture.Size.X / a);
+                SubCountY = (int)Math.Ceiling((float)sprite.Texture.Size.Y / b);
             }
         }
 
         // Удаляем текстуру
         public void Dispose()
         {
-            _texture.Dispose();
-            _texture = null;
+            _sprite.Dispose();
+            _sprite = null;
         }
 
+        public Sprite GetSprite() => _sprite;
+
         // Получаем текстуру
-        public Texture GetTexture() => _texture;
+        public Texture GetTexture() => _sprite.Texture;
 
         // Получаем размер плитки
-        public Vector2u GetTextureSize() => _texture.Size;
+        public Vector2u GetTextureSize() => _sprite.Texture.Size;
 
         // Получаем фрагмент текстуры по номеру столбца и строки
         public IntRect GetTextureRect(int i, int j)
@@ -133,8 +135,8 @@ namespace GameEngine.Core.Graphics
 
             if (_abIsCount)
             {
-                SubWidth = (int)Math.Ceiling((float)_texture.Size.X / size.X);
-                SubHeight = (int)Math.Ceiling((float)_texture.Size.Y / size.Y);
+                SubWidth = (int)Math.Ceiling((float)_sprite.Texture.Size.X / size.X);
+                SubHeight = (int)Math.Ceiling((float)_sprite.Texture.Size.Y / size.Y);
                 SubCountX = size.X;
                 SubCountY = size.Y;
             }
@@ -142,8 +144,8 @@ namespace GameEngine.Core.Graphics
             {
                 SubWidth = size.X;
                 SubHeight = size.Y;
-                SubCountX = (int)Math.Ceiling((float)_texture.Size.X / size.X);
-                SubCountY = (int)Math.Ceiling((float)_texture.Size.Y / size.Y);
+                SubCountX = (int)Math.Ceiling((float)_sprite.Texture.Size.X / size.X);
+                SubCountY = (int)Math.Ceiling((float)_sprite.Texture.Size.Y / size.Y);
             }
         }
 
@@ -156,10 +158,5 @@ namespace GameEngine.Core.Graphics
         }
 
         public int GetBorderSize() => _borderSize;
-
-        public void SetTexture(Texture texture)
-        {
-            _texture = texture;
-        }
     }
 }

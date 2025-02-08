@@ -1,10 +1,10 @@
-﻿using SFML.Graphics;
+﻿using GameEngine.Core.Contents.Assets;
+using SFML.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static SFML.Window.Keyboard;
 
 namespace GameEngine.Core.Contents
 {
@@ -21,7 +21,7 @@ namespace GameEngine.Core.Contents
 
         public void Load()
         {
-            var files = Directory.GetFiles(_path, "*.png", SearchOption.AllDirectories);
+            var files = Directory.GetFiles(_path, "*", SearchOption.AllDirectories);
 
             foreach (var file in files)
             {
@@ -30,26 +30,19 @@ namespace GameEngine.Core.Contents
 
                 if (!_assets.ContainsKey(fileName))
                 {
-                    var asset = new ImageAsset(new Texture(file), fileName);
-                    asset.FullPath = file;
+                    if (file.Contains(".png") || file.Contains(".jpg"))
+                    {
+                        var asset = new ImageAsset(new Texture(file), fileName);
+                        asset.FullPath = file;
 
-                    _assets.Add(fileName, asset);
-                }
-            }
+                        _assets.Add(fileName, asset);
+                    }
+                    else if(file.Contains(".wav"))
+                    {
+                        var asset = new AudioAsset(file, fileName);
 
-            files = Directory.GetFiles(_path, "*.jpg", SearchOption.AllDirectories);
-
-            foreach (var file in files)
-            {
-                string fileName = Path.GetFileName(file);
-                fileName = fileName.Remove(fileName.Length - 4);
-
-                if (!_assets.ContainsKey(fileName))
-                {
-                    var asset = new ImageAsset(new Texture(file), fileName);
-                    asset.FullPath = file;
-
-                    _assets.Add(fileName, asset);
+                        _assets.Add(fileName, asset);
+                    }
                 }
             }
         }
@@ -62,7 +55,7 @@ namespace GameEngine.Core.Contents
             return null;
         }
 
-        public static T GetAsset<T>(string key) where T : IAsset
+        public static T? GetAsset<T>(string key) where T : IAsset
         {
             if (_assets.ContainsKey(key))
                 return (T)_assets[key];

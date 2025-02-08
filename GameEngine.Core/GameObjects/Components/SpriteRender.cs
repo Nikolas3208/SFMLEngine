@@ -17,12 +17,39 @@ namespace GameEngine.Core.GameObjects.Components
         private Sprite _sprite;
         private bool _draw = true;
         private Color _color = Color.White;
+        private bool _flipX = false;
+        private bool _flipY = false;
 
         public Guid Id { get => _id; set => _id = value; }
         public string Name { get => _name; set => _name = value; }
         public IGameObject Perent { get => _gameObject; set => _gameObject = value; }
         public string SpriteName { get; set; } = string.Empty;
         public Color Color { get => _color; set { _sprite.Color = value; _color = value; } }
+
+        public bool FlipX
+        {
+            get => _flipX;
+            set 
+            { 
+                _flipX = value;
+                if (value)
+                    _sprite.Scale = new Vector2f(-1, _sprite.Scale.Y);
+                else
+                    _sprite.Scale = new Vector2f(1, _sprite.Scale.Y);
+            }
+        }
+        public bool FlipY
+        {
+            get => _flipY;
+            set
+            {
+                _flipY = value;
+                if (value)
+                    _sprite.Scale = new Vector2f(_sprite.Scale.X, -1);
+                else
+                    _sprite.Scale = new Vector2f(_sprite.Scale.X, 1);
+            }
+        }
 
         public SpriteRender(IGameObject perent)
         {
@@ -41,20 +68,21 @@ namespace GameEngine.Core.GameObjects.Components
             Id = Guid.NewGuid();
         }
 
-        public SpriteRender(SpriteSheet spriteSheet, IGameObject perent)
+        public SpriteRender(Sprite sprite, IGameObject perent)
         {
-            _sprite = new Sprite(spriteSheet.GetTexture(), spriteSheet.GetRectangle());
-            _sprite.Origin = new Vector2f(spriteSheet.SubWidth, spriteSheet.SubHeight);
+            _sprite = sprite;
 
             Perent = perent;
             Id = Guid.NewGuid();
         }
 
-        public Texture GetTexture() => _sprite.Texture;
-        public IntRect GetSpriteRect() => _sprite.TextureRect;
-        public void UpdateSpriteRect(IntRect textureRect)
+        public SpriteRender(SpriteSheet spriteSheet, IGameObject perent)
         {
-            _sprite.TextureRect = textureRect;
+            _sprite = spriteSheet.GetSprite();
+            _sprite.Origin = new Vector2f(spriteSheet.SubWidth, spriteSheet.SubHeight);
+
+            Perent = perent;
+            Id = Guid.NewGuid();
         }
         
         public void Start()
@@ -84,5 +112,7 @@ namespace GameEngine.Core.GameObjects.Components
                 _sprite.Color = _color;
             }
         }
+
+        public Sprite GetSprite() => _sprite;
     }
 }

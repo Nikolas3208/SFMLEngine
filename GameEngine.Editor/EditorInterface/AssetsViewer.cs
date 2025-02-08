@@ -1,4 +1,5 @@
 ﻿using GameEngine.Core.Contents;
+using GameEngine.Core.Contents.Assets;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace GameEngine.Editor.EditorInterface
         private List<string> _paths = [];
         private nint _folderIcon = 0;
         private nint _textFileIcon = 0;
+        private nint _audioFile = 0;
         private EditorInterface _interface;
         private int _currentPath = 0;
         private string[] _comboPaths = [];
@@ -35,8 +37,9 @@ namespace GameEngine.Editor.EditorInterface
         {
             _interface = @interface;
             CurrentFolder = path;
-            _folderIcon = (nint)AssetsMenager.GetAsset<ImageAsset>("folder_icon").Texture!.NativeHandle;
+            _folderIcon = (nint)AssetsMenager.GetAsset<ImageAsset>("folder").Texture!.NativeHandle;
             _textFileIcon = (nint)AssetsMenager.GetAsset<ImageAsset>("text_icon").Texture!.NativeHandle;
+            _audioFile = (nint)AssetsMenager.GetAsset<ImageAsset>("audio_icon").Texture!.NativeHandle;
         }
 
         public void AssetsView()
@@ -89,6 +92,16 @@ namespace GameEngine.Editor.EditorInterface
                         {
                             _interface.ScelectCurrentAssetName = _paths[i].Remove(_paths[i].IndexOf("."));
                             _interface.SelectGameObjectId = Guid.Empty;
+                        }
+                        if (ImGui.IsItemHovered())
+                            ImGui.SetTooltip(_paths[i]);
+                    }
+                    else if (_paths[i].Contains(".wav"))
+                    {
+                        ImGui.PushID(_paths[i]);
+                        if (ImGui.ImageButton(_audioFile, new Vector2(64, 64)))
+                        {
+
                         }
                         if (ImGui.IsItemHovered())
                             ImGui.SetTooltip(_paths[i]);

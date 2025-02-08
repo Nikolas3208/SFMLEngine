@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameEngine.Core.Contents
+namespace GameEngine.Core.Contents.Assets
 {
     public class Asset : IAsset
     {
