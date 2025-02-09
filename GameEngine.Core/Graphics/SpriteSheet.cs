@@ -123,7 +123,7 @@ namespace GameEngine.Core.Graphics
         // Устанавлиаем размер отступа между плитками
         public void SetBorderSize(int borderSize)
         {
-            _borderSize = borderSize > 0 ? borderSize + 1 : 0;
+            _borderSize = borderSize > 0 ? borderSize : 0;
         }
 
         // Устанавливаем размер плитки если !_abIsCount

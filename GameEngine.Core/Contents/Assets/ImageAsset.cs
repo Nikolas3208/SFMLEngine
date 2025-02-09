@@ -50,9 +50,11 @@ namespace GameEngine.Core.Contents.Assets
 
                 if(value)
                 {
+                    _isSprite = true;
                     if(_sprite == null)
                         _sprite = new Sprite(_texture);
                     _spriteSheet = new SpriteSheet(_sprite, _isSmooth);
+                    _spriteSheet.Name = Name;
                 }
                 else
                 {
@@ -72,6 +74,14 @@ namespace GameEngine.Core.Contents.Assets
             _texture = texture;
             Name = name;
             Type = AssetType.Image;
+        }
+
+        public void SetTileSize(Vector2i size)
+        {
+            if(IsMultiplaySprite)
+            {
+                SpriteSheet!.SetTileSize(size);
+            }
         }
     }
 }

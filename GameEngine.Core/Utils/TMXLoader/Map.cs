@@ -1,4 +1,7 @@
-﻿using System;
+﻿using GameEngine.Core.Contents;
+using GameEngine.Core.Contents.Assets;
+using SFML.System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,23 +13,15 @@ namespace GameEngine.Core.Utils.TMXLoader
     public class Map
     {
         public List<TileSet> TileSets;
-        public List<Layer> Layers;
+        public List<MapLayer> MapLayers;
 
         public int TileWidth;
         public int TileHeight;
 
-        public Map(string filePath)
+        public Map(List<TileSet> tileSets, List<MapLayer> mapLayers)
         {
-            TileSets = new List<TileSet>();
-            Layers = new List<Layer>();
-
-            XDocument xDocument = XDocument.Load(filePath);
-
-            var map = xDocument.Element("map");
-
-            var tileSet = TileSetLoader.Load(map);
-
-            var layers = LayerLoader.Load(map);
+            TileSets = tileSets;
+            MapLayers = mapLayers;
         }
     }
 }

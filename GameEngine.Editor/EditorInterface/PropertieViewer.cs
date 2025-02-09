@@ -107,6 +107,9 @@ namespace GameEngine.Editor.EditorInterface
                     ImGui.InputFloat2("Tile size: ", ref tileSize);
                     asset.SpriteSheet!.SetTileSize(new Vector2i((int)tileSize.X, (int)tileSize.Y));
                     ImGui.Spacing();
+                    int borderSize = asset.SpriteSheet.GetBorderSize();
+                    if (ImGui.InputInt("Border size", ref borderSize))
+                        asset.SpriteSheet.SetBorderSize(borderSize);
                 }
             }
             bool smooth = asset.IsSmooth;

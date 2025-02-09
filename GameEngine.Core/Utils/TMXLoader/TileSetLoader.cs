@@ -17,36 +17,44 @@ namespace GameEngine.Core.Utils.TMXLoader
 
             foreach (var tileSet in tileSets)
             {
-                var firstgid = tileSet.Attribute("firstgid").Value;
-                var source = tileSet.Attribute("source").Value;
+                int firstgid = int.Parse(tileSet.Attribute("firstgid")!.Value);
 
-                var tileset = LoadTSX(source);
-                tileset.FirstGid = int.Parse(firstgid);
+                if (tileSet.Element("image") != null)
+                {
+                    var tileset = LoadTSX(tileSet.Element("image")!.Attribute("source")!.Value, firstgid);
 
-                retTileSets.Add(tileset);
+                    retTileSets.Add(tileset);
+                }
+                else
+                {
+                    var source = tileSet.Attribute("source")!.Value;
 
+                    var tileset = LoadTSX(source, firstgid);
+
+                    retTileSets.Add(tileset);
+                }
             }
 
             return retTileSets;
         }
 
-        private static TileSet LoadTSX(string source)
+        private static TileSet LoadTSX(string source, int firstId)
         {
-            XDocument xDocument = XDocument.Load("Assets/Levels/" + source);
+            XDocument xDocument = XDocument.Load(source);
 
             var tileSet = xDocument.Element("tileset");
-            var name = tileSet.Attribute("name").Value;
-            var tilewidth = tileSet.Attribute("tilewidth").Value;
-            var tileheight = tileSet.Attribute("tileheight").Value;
-            var tilecount = tileSet.Attribute("tilecount").Value;
-            var columns = tileSet.Attribute("columns").Value;
+
+            var name = tileSet!.Attribute("name")!.Value;
+            int tileWidth = int.Parse(tileSet.Attribute("tilewidth")!.Value);
+            int tileHeight = int.Parse(tileSet.Attribute("tileheight")!.Value);
 
             var image = tileSet.Element("image");
-            var sourceImage = image.Attribute("source").Value;
-            var width = image.Attribute("width").Value;
-            var height = image.Attribute("height").Value;
 
-            return new TileSet { Name = name, Source = source, TileWidth = int.Parse(tilewidth), TileHeight = int.Parse(tileheight), TileCount = int.Parse(tilecount), Columns = int.Parse(columns), ImageSource = sourceImage, ImageWidth = int.Parse(width), ImageHeight = int.Parse(height) };
+            var sourceImage = image!.Attribute("source")!.Value;
+            int width = int.Parse(image.Attribute("width")!.Value);
+            int height = int.Parse(image.Attribute("height")!.Value);
+
+            return new TileSet(firstId, name, tileWidth, tileHeight, new TileSetImage(sourceImage, width, height));
         }
     }
 }

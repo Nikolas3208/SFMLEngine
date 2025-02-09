@@ -9,13 +9,23 @@ namespace GameEngine.Editor
 {
     public class EditorScene : SceneBase
     {
+        private Map map;
         public EditorScene()
         {
-            Map map = new Map("../net8.0/Assets/Levels/level1.tmx");
+            //map = TmxLoader.Load("../net8.0/Assets/Levels/level1.tmx");
         }
 
         public override void Start()
         {
+            GameObject gameObject = new GameObject(this, "Fire");
+            gameObject.Position = new SFML.System.Vector2f(-1000, -700);
+
+            TileMapRender tileMapRender = new TileMapRender(map, gameObject);
+
+            gameObject.AddComponent(tileMapRender);
+
+            AddGameObject(gameObject);
+
             base.Start();
         }
         public override void Draw(RenderTarget target, RenderStates states)

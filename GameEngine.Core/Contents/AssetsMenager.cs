@@ -30,19 +30,23 @@ namespace GameEngine.Core.Contents
 
                 if (!_assets.ContainsKey(fileName))
                 {
-                    if (file.Contains(".png") || file.Contains(".jpg"))
+                    try
                     {
-                        var asset = new ImageAsset(new Texture(file), fileName);
-                        asset.FullPath = file;
+                        if (file.Contains(".png") || file.Contains(".jpg"))
+                        {
+                            var asset = new ImageAsset(new Texture(file), fileName);
+                            asset.FullPath = file;
 
-                        _assets.Add(fileName, asset);
-                    }
-                    else if(file.Contains(".wav"))
-                    {
-                        var asset = new AudioAsset(file, fileName);
+                            _assets.Add(fileName, asset);
+                        }
+                        else if (file.Contains(".wav"))
+                        {
+                            var asset = new AudioAsset(file, fileName);
 
-                        _assets.Add(fileName, asset);
+                            _assets.Add(fileName, asset);
+                        }
                     }
+                    catch { }
                 }
             }
         }
