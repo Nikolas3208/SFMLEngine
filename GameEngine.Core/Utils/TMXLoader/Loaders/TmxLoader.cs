@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace GameEngine.Core.Utils.TMXLoader
+namespace GameEngine.Core.Utils.TMXLoader.Loaders
 {
     public class TmxLoader
     {
@@ -22,7 +22,15 @@ namespace GameEngine.Core.Utils.TMXLoader
 
             var layers = MapLayerLoader.Load(map!);
 
-            return new Map(tileSets, layers);
+            var mapObjects = MapObjectGroupsLoader.Load(map!);
+
+            var Map = new Map(tileSets, layers, mapObjects);
+            Map.Width = int.Parse(map.Attribute("width")!.Value);
+            Map.Height = int.Parse(map.Attribute("height")!.Value);
+            Map.TileWidth = int.Parse(map.Attribute("tilewidth")!.Value);
+            Map.TileHeight = int.Parse(map.Attribute("tileheight")!.Value);
+
+            return Map;
         }
     }
 }

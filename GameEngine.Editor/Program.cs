@@ -1,5 +1,4 @@
 ﻿using GameEngine.Core.Graphics;
-using GameEngine.Core.Scenes;
 using SFML.Window;
 
 namespace GameEngine.Editor;

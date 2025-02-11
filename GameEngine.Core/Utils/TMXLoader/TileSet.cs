@@ -1,6 +1,7 @@
 ﻿using GameEngine.Core.Contents;
 using GameEngine.Core.Contents.Assets;
 using GameEngine.Core.Graphics;
+using GameEngine.Core.Graphics.Animations;
 using SFML.System;
 using System;
 using System.Collections.Generic;
@@ -14,13 +15,15 @@ namespace GameEngine.Core.Utils.TMXLoader
     {
         public int FirstId { get; set; }
         public int LastId { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public int TileWidth {  get; set; }
         public int TileHeight { get; set; }
 
         public TileSetImage Image { get; set; }
 
-        public SpriteSheet SpriteSheet { get; set; }
+        public SpriteSheet? SpriteSheet { get; set; }
+
+        public AnimSprite? AnimSprite { get; set; }
 
         public TileSet(int firstId, string name, int tileWidth, int tileHeight, TileSetImage image)
         {
@@ -35,6 +38,12 @@ namespace GameEngine.Core.Utils.TMXLoader
             LoadSpriteSheet(image);
         }
 
+        public TileSet(int firstId, string name, int tileWidth, int tileHeight, TileSetImage image, Animation animation) : this(firstId, name, tileWidth, tileHeight, image)
+        {
+            AnimSprite = new AnimSprite(SpriteSheet!);
+            AnimSprite.AddAnimation("tileSet", animation);
+        }
+        
         private void LoadSpriteSheet(TileSetImage image)
         {
             string name = Path.GetFileName(image.FilePath);

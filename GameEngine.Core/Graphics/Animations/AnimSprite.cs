@@ -26,7 +26,7 @@ namespace GameEngine.Core.Graphics.Animations
             this.ss = ss;
 
             rectShape = new RectangleShape(new Vector2f(ss.SubWidth, ss.SubHeight));
-            rectShape.Origin = new Vector2f(ss.SubWidth / 2, ss.SubHeight / 2);
+            //rectShape.Origin = new Vector2f(ss.SubWidth / 2, ss.SubHeight / 2);
             rectShape.Texture = ss.GetTexture();
 
         }

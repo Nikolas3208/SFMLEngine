@@ -1,4 +1,6 @@
-﻿using ImGuiNET;
+﻿using GameEngine.Core.Contents;
+using GameEngine.Core.Contents.Assets;
+using ImGuiNET;
 using SFML.Graphics;
 using SFML.System;
 using System;
@@ -122,6 +124,83 @@ namespace GameEngine.Core.Utils.ImGuiImple
             clouse = ImGui.SmallButton("remove");
 
             return false;
+        }
+
+        private static string _selectAssetSearch;
+
+        public static IAsset SelectAsset(AssetType type)
+        {
+            if (ImGui.Begin("Select asset"))
+            {
+                ImGui.InputText("", ref _selectAssetSearch, 50);
+                ImGui.Spacing();
+                var startPos = ImGui.GetCursorPos();
+
+                int x = 0, y = 0;
+                int count = 0;
+                string? nameAsset = null;
+
+                if (type == AssetType.Sprite)
+                    count = AssetsMenager.GetAssetsCount<ImageAsset>(keySearch: _selectAssetSearch, type: type);
+
+                for (int i = 0; i < count; i++)
+                {
+                    if (startPos.X + x * 75 > ImGui.GetWindowWidth() - 75)
+                    {
+                        x = 0;
+                        y++;
+                    }
+
+                    ImGui.SetCursorPos(new Vector2(startPos.X + x * 75, startPos.Y + y * 75 + 20 * y));
+
+                    if (type == AssetType.Sprite)
+                    {
+                        var asset = AssetsMenager.GetAssetByIndex<ImageAsset>(i, keySearch: _selectAssetSearch, type: AssetType.Sprite);
+                        if (ImGui.ImageButton((nint)asset.Texture!.NativeHandle, new Vector2(64, 64)))
+                        {
+                            return asset;
+                        }
+                        if (ImGui.IsItemHovered())
+                            ImGui.SetTooltip(asset.Name);
+
+                        nameAsset = asset.Name;
+                    }
+                    else if(type == AssetType.Sound)
+                    {
+                        var audioIcon = (nint)AssetsMenager.GetAsset<ImageAsset>("audio_icon").Texture!.NativeHandle;
+                        var asset = AssetsMenager.GetAssetByIndex<AudioAsset>(i, keySearch: _selectAssetSearch, type: AssetType.Sprite);
+                        if (ImGui.ImageButton(audioIcon, new Vector2(64, 64)))
+                        {
+                            return asset;
+                        }
+                        if (ImGui.IsItemHovered())
+                            ImGui.SetTooltip(asset.Name);
+
+                        nameAsset = asset.Name;
+                    }
+                    else if(type == AssetType.Text)
+                    {
+
+                    }
+
+                    string name = nameAsset;
+                    if (name.Length > 7)
+                    {
+                        name = name.Remove(7);
+                        name += "...";
+                    }
+                    var textPos = ImGui.GetCursorPos();
+
+                    ImGui.SetCursorPos(new Vector2(startPos.X + x * 75, textPos.Y - 75 * y + y * 75));
+                    ImGui.Text(name);
+
+                    x++;
+                }
+
+                ImGui.End();
+            }
+
+            return null;
         }
     }
 }

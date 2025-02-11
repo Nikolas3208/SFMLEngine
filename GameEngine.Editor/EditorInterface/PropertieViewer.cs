@@ -238,7 +238,10 @@ namespace GameEngine.Editor.EditorInterface
                                 _openAddAnimation = true;
                             }
                         }
+                        else if(component.GetType() == typeof(TileMapRender))
+                        {
 
+                        }
                         ImGui.TreePop();
                     }
 
@@ -260,7 +263,7 @@ namespace GameEngine.Editor.EditorInterface
 
         private Vector4 color = new Vector4();
 
-        private void OpenSelectImage()
+        private void OpenSelect()
         {
             if (_openSelectImage)
             {
@@ -484,7 +487,7 @@ namespace GameEngine.Editor.EditorInterface
 
         private void PopupDraw()
         {
-            OpenSelectImage();
+            OpenSelect();
 
             OpenColorPicker();
 

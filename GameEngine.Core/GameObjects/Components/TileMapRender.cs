@@ -1,9 +1,12 @@
 ﻿using GameEngine.Core.Contents;
 using GameEngine.Core.Contents.Assets;
 using GameEngine.Core.Graphics;
+using GameEngine.Core.Graphics.Animations;
 using GameEngine.Core.Utils.TMXLoader;
+using ImGuiNET;
 using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +23,8 @@ namespace GameEngine.Core.GameObjects.Components
 
         private Map _map;
         private Dictionary<string, Vertex[]> _vertices = new Dictionary<string, Vertex[]>();
-        private Dictionary<string, Texture> _textures = new Dictionary<string, Texture>(); 
+        private Dictionary<string, Texture> _textures = new Dictionary<string, Texture>();
+        private Dictionary<string, List<Tile>> _tiles = new Dictionary<string, List<Tile>>();
 
         private Texture Texture;
 
@@ -34,87 +38,78 @@ namespace GameEngine.Core.GameObjects.Components
 
         public void Start()
         {
-            int index = 0;
-
             if (_map != null)
             {
                 foreach (var mapLayer in _map.MapLayers)
                 {
-                    var vertices = new Vertex[mapLayer.Width * mapLayer.Height * 6];
+                    var tiles = new List<Tile>();
                     SpriteSheet ss = null;
                     int firstId = 0;
-
 
                     for (int x = 0; x < mapLayer.Width; x++)
                     {
                         for (int y = 0; y < mapLayer.Height; y++)
                         {
-                            if (index < vertices.Length)
+                            int tileId = x + y * mapLayer.Width;
+                            if (tileId < mapLayer.TileIds.Length)
                             {
-                                int tileId = x + y * mapLayer.Width;
-                                if (tileId < mapLayer.TileIds.Length)
+                                var id = mapLayer.TileIds[tileId];
+                                if (id > 0)
                                 {
-                                    var id = mapLayer.TileIds[tileId];
-                                    if (id > 0)
+                                    AnimSprite animSprite = null;
+                                    foreach (var tileSet in _map.TileSets)
                                     {
-                                        if (ss == null)
+                                        if (tileSet.ContainsTile(id))
                                         {
-                                            foreach (var tileSet in _map.TileSets)
-                                            {
-                                                if (tileSet.ContainsTile(id))
-                                                {
-                                                    firstId = tileSet.FirstId;
-                                                    ss = tileSet.SpriteSheet;
-                                                }
-                                            }
+                                            firstId = tileSet.FirstId;
+                                            ss = tileSet.SpriteSheet!;
+                                            if(tileSet.AnimSprite != null)
+                                                animSprite = tileSet.AnimSprite;
+                                            break;
                                         }
+                                    }
 
-                                        if (ss != null)
-                                        {
-                                            var rect = ss.GetTextureRect(id - firstId);
-                                            Vector2f position = new Vector2f(rect.Left, rect.Top);
-                                            Vector2f size = new Vector2f(rect.Width, rect.Height);
+                                    if (ss != null)
+                                    {
+                                        var sprite = new Sprite(ss.GetSprite());
+                                        sprite.TextureRect = ss.GetTextureRect(id - firstId);
+                                        //sprite.Origin = (Vector2f)ss.GetTileSize() / 2;
+                                        var tile = new Tile(id, sprite);
+                                        if (animSprite != null)
+                                            tile = new Tile(id, sprite, animSprite);
 
-                                            vertices[index] = new Vertex(new Vector2f(x * 64, y * 64), position);
-                                            vertices[index + 1] = new Vertex(new Vector2f(x * 64, y * 64 + size.Y), position + new Vector2f(0, size.Y));
-                                            vertices[index + 2] = new Vertex(new Vector2f(x * 64 + size.X, y * 64), position + new Vector2f(size.X, 0));
-                                            vertices[index + 3] = new Vertex(new Vector2f(x * 64, y * 64 + size.Y), position + new Vector2f(0, size.Y));
-                                            vertices[index + 4] = new Vertex(new Vector2f(x * 64 + size.X, y * 64), position + new Vector2f(size.X, 0));
-                                            vertices[index + 5] = new Vertex(new Vector2f(x * 64, y * 64) + size, position + size);
-                                        }
+                                        int xOffset = ss.GetTileSize().X / _map.TileWidth - 1;
+                                        int yOffset = ss.GetTileSize().Y / _map.TileHeight - 1;
+
+                                        tile.Position = new Vector2f((x) * _map.TileWidth, (y - yOffset) * _map.TileHeight);
+
+                                        tiles.Add(tile);
                                     }
                                 }
                             }
-
-                            index += 6;
                         }
                     }
 
-                    if (!_vertices.ContainsKey(mapLayer.Name))
-                        _vertices.Add(mapLayer.Name, vertices);
-                    if (ss != null && !_textures.ContainsKey(mapLayer.Name))
-                        _textures.Add(mapLayer.Name, ss!.GetTexture());
-
-                    index = 0;
-                    vertices = new Vertex[mapLayer.Width * mapLayer.Height * 6];
+                    if (!_tiles.ContainsKey(mapLayer.Name))
+                        _tiles.Add(mapLayer.Name, tiles);
                 }
             }
         }
 
         public void Update(Time deltaTime)
         {
-            Start();
+
         }
 
-        public void Draw(RenderTarget target, RenderStates state)
+        public void Draw(RenderTarget target, RenderStates states)
         {
-            foreach(var vertices in  _vertices)
+            foreach(var tiles in _tiles)
             {
-                if (_textures.ContainsKey(vertices.Key))
-                    state.Texture = _textures[vertices.Key];
-
-                target.Draw(vertices.Value, PrimitiveType.Triangles, state);
-            }    
+                foreach (var tile in tiles.Value)
+                {
+                    tile.Draw(target, states);
+                }
+            }
         }
     }
 }

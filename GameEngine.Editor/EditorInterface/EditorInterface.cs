@@ -74,12 +74,14 @@ namespace GameEngine.Editor.EditorInterface
             }
         }
 
+        public static Vector2 size;
+
         private void SceneViewer()
         {
             ImGui.Begin("SceneViewer");
 
             ImGui.Image(SceneTexture, ImGui.GetContentRegionAvail(), new Vector2(0, 1), new Vector2(1, 0));
-
+            size = ImGui.GetItemRectMin();
             ImGui.End();
         }
 

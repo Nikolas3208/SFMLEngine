@@ -1,11 +1,12 @@
-﻿using System;
+﻿using GameEngine.Core.Graphics.Animations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace GameEngine.Core.Utils.TMXLoader
+namespace GameEngine.Core.Utils.TMXLoader.Loaders
 {
     public class TileSetLoader
     {
@@ -40,7 +41,7 @@ namespace GameEngine.Core.Utils.TMXLoader
 
         private static TileSet LoadTSX(string source, int firstId)
         {
-            XDocument xDocument = XDocument.Load(source);
+            XDocument xDocument = XDocument.Load("Assets\\Levels\\" + source);
 
             var tileSet = xDocument.Element("tileset");
 
@@ -54,8 +55,26 @@ namespace GameEngine.Core.Utils.TMXLoader
             int width = int.Parse(image.Attribute("width")!.Value);
             int height = int.Parse(image.Attribute("height")!.Value);
 
-            return new TileSet(firstId, name, tileWidth, tileHeight, new TileSetImage(sourceImage, width, height));
+            if (tileSet.Element("tile") == null)
+                return new TileSet(firstId, name, tileWidth, tileHeight, new TileSetImage(sourceImage, width, height));
+            else
+            {
+                List<AnimationFrame> framesAnim = new List<AnimationFrame>();
+
+                var tile = tileSet.Element("tile");
+                var animation = tile!.Element("animation");
+                var frames = animation!.Elements("frame");
+
+                foreach( var frame in frames)
+                {
+                    int tileId = int.Parse(frame.Attribute("tileid")!.Value);
+                    float time = float.Parse(frame.Attribute("duration")!.Value) / 100;
+
+                    framesAnim.Add(new AnimationFrame(tileId, time));
+                }
+
+                return new TileSet(firstId, name, tileWidth, tileHeight, new TileSetImage(sourceImage, width, height), new Animation(framesAnim.ToArray()));
+            }
         }
     }
 }
- 

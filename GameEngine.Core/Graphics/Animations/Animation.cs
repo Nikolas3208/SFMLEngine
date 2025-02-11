@@ -1,4 +1,5 @@
 ﻿
+
 namespace GameEngine.Core.Graphics.Animations
 {
     public class Animation
@@ -48,6 +49,11 @@ namespace GameEngine.Core.Graphics.Animations
                 NextFrame();
 
             return currFrame;
+        }
+
+        public void AddFrame(AnimationFrame animationFrame)
+        {
+            frames[frames.Count()] = animationFrame;
         }
     }
 }

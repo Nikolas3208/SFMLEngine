@@ -38,7 +38,7 @@ namespace GameEngine.Editor
             base.Draw(target, states);
 
             _renderWindowTexture.Update(_window.GetRenderWindow());
-            //_window.Clear(new Color(128, 128, 128));
+            _window.Clear();
 
             _interface.SceneTexture = (nint)_renderWindowTexture.NativeHandle;
 
