@@ -58,7 +58,8 @@ namespace GameEngine.Core.Contents.Assets
                 }
                 else
                 {
-                    _sprite = null;
+                    if (!_isSprite)
+                        _sprite = null;
                     _spriteSheet = null;
                 }
             }
@@ -74,14 +75,6 @@ namespace GameEngine.Core.Contents.Assets
             _texture = texture;
             Name = name;
             Type = AssetType.Image;
-        }
-
-        public void SetTileSize(Vector2i size)
-        {
-            if(IsMultiplaySprite)
-            {
-                SpriteSheet!.SetTileSize(size);
-            }
         }
     }
 }

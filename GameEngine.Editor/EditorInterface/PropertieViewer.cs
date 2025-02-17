@@ -7,12 +7,7 @@ using GameEngine.Core.Utils.ImGuiImple;
 using ImGuiNET;
 using SFML.Graphics;
 using SFML.System;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameEngine.Editor.EditorInterface
 {
@@ -156,7 +151,7 @@ namespace GameEngine.Editor.EditorInterface
                 {
                     bool clouse = false;
 
-                    if (ImGuiImpl.ClosedTreeNodeEx(component.Name, ImGuiTreeNodeFlags.DefaultOpen, ref clouse))
+                    if (ImGuiImple.ClosedTreeNodeEx(component.Name, ImGuiTreeNodeFlags.DefaultOpen, ref clouse))
                     {
                         if(clouse)
                         {
@@ -182,6 +177,18 @@ namespace GameEngine.Editor.EditorInterface
                             {
                                 _openSelectImage = true;
                             }
+
+                            if(_openSelectImage)
+                            {
+                                var asset = (ImageAsset)ImGuiImple.SelectAsset(AssetType.Sprite)!;
+
+                                if (asset != null)
+                                {
+                                    spriteRender.UpdateSprite(asset.Sprite);
+                                    spriteRender.SpriteName = asset.Name;
+                                    _openSelectImage = false;
+                                }
+                            }
                             ImGui.Spacing();
                             float textColorPosX = ImGui.GetCursorPos().Y;
                             ImGui.Text("Color: ");
@@ -196,11 +203,11 @@ namespace GameEngine.Editor.EditorInterface
                             var flipPos = ImGui.GetCursorPos();
                             ImGui.Text("Flip ");
                             float flipTextSizeX = ImGui.GetItemRectSize().X;
-                            ImGuiImpl.CheckBox("X", ref flipX, new Vector2(flipPos.X + 40 + flipTextSizeX, flipPos.Y));
+                            ImGuiImple.CheckBox("X", ref flipX, new Vector2(flipPos.X + 40 + flipTextSizeX, flipPos.Y));
 
                             float flipXSizeX = ImGui.GetItemRectSize().X;
 
-                            ImGuiImpl.CheckBox("Y", ref flipY, new Vector2(flipPos.X + 40 + flipTextSizeX + 10 + flipXSizeX, flipPos.Y));
+                            ImGuiImple.CheckBox("Y", ref flipY, new Vector2(flipPos.X + 40 + flipTextSizeX + 10 + flipXSizeX, flipPos.Y));
 
                             spriteRender.FlipX = flipX;
                             spriteRender.FlipY = flipY;
@@ -262,70 +269,6 @@ namespace GameEngine.Editor.EditorInterface
         }
 
         private Vector4 color = new Vector4();
-
-        private void OpenSelect()
-        {
-            if (_openSelectImage)
-            {
-                ImGui.OpenPopup("Select sprite");
-                _openSelectImage = false;
-            }
-
-            ImGui.SetNextWindowSize(new Vector2(245, 300));
-            if (ImGui.BeginPopup("Select sprite", ImGuiWindowFlags.Popup))
-            {
-                ImGui.InputText("", ref _selectImageSearch, 50);
-                ImGui.Spacing();
-                var startPos = ImGui.GetCursorPos();
-
-                int x = 0, y = 0;
-
-                for (int i = 0; i < AssetsMenager.GetAssetsCount<ImageAsset>(keySearch: _selectImageSearch, type: AssetType.Sprite); i++)
-                {
-                    if (startPos.X + x * 75 > ImGui.GetWindowWidth() - 75)
-                    {
-                        x = 0;
-                        y++;
-                    }
-
-                    ImGui.SetCursorPos(new Vector2(startPos.X + x * 75, startPos.Y + y * 75 + 20 * y));
-
-                    var asset = AssetsMenager.GetAssetByIndex<ImageAsset>(i, keySearch: _selectImageSearch, type: AssetType.Sprite);
-                    if (ImGui.ImageButton((nint)asset.Texture!.NativeHandle, new Vector2(64, 64)))
-                    {
-                        if (_gameObject != null)
-                        {
-                            if (asset.IsSprite)
-                            {
-                                _gameObject.GetComponent<SpriteRender>().UpdateSprite(asset.Sprite!);
-                                _gameObject.GetComponent<SpriteRender>().SpriteName = asset.Name;
-                            }
-                        }
-
-                        ImGui.CloseCurrentPopup();
-                    }
-                    if (ImGui.IsItemHovered())
-                        ImGui.SetTooltip(asset.Name);
-
-                    string name = asset.Name;
-                    if (name.Length > 7)
-                    {
-                        name = name.Remove(7);
-                        name += "...";
-                    }
-                    var textPos = ImGui.GetCursorPos();
-
-                    ImGui.SetCursorPos(new Vector2(startPos.X + x * 75, textPos.Y - 75 * y + y * 75));
-                    ImGui.Text(name);
-
-                    x++;
-                }
-
-                ImGui.EndPopup();
-            }
-
-        }
-
         private void OpenColorPicker()
         {
             if (_openColorPicker)
@@ -487,7 +430,7 @@ namespace GameEngine.Editor.EditorInterface
 
         private void PopupDraw()
         {
-            OpenSelect();
+            //OpenSelect();
 
             OpenColorPicker();
 

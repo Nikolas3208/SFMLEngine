@@ -1,5 +1,6 @@
 ﻿using GameEngine.Core.Contents;
 using GameEngine.Core.Contents.Assets;
+using GameEngine.Core.GameObjects;
 using ImGuiNET;
 using SFML.Graphics;
 using SFML.System;
@@ -12,7 +13,15 @@ using System.Threading.Tasks;
 
 namespace GameEngine.Core.Utils.ImGuiImple
 {
-    public class ImGuiImpl
+    public enum ToolType
+    {
+        None,
+        Select,
+        Grab,
+        Rotate,
+        Scale
+    }
+    public class ImGuiImple
     {
         public static void Image(Sprite sprite, Vector2 size, string str_id = "")
         {
@@ -58,10 +67,30 @@ namespace GameEngine.Core.Utils.ImGuiImple
         {
             nint texuteHandle = (nint)texture.NativeHandle;
 
-            if(str_id != "")
+            if (str_id != "")
                 ImGui.PushID(str_id);
 
             return ImGui.ImageButton(texuteHandle, size);
+        }
+
+        public static bool ImageButton(Sprite sprite, Vector2 size, string str_id = "")
+        {
+            nint texuteHandle = (nint)sprite.Texture.NativeHandle;
+
+            if (str_id != "")
+                ImGui.PushID(str_id);
+
+            return ImGui.ImageButton(texuteHandle, size);
+        }
+
+        public static bool ImageButton(Texture texture, Vector2 size, Vector2 uv0, Vector2 uv1, string str_id = "")
+        {
+            nint texuteHandle = (nint)texture.NativeHandle;
+
+            if (str_id != "")
+                ImGui.PushID(str_id);
+
+            return ImGui.ImageButton(texuteHandle, size, uv0, uv1);
         }
 
         public static bool ImageButton(Sprite sprite, Vector2 size, Vector2 uv0, Vector2 uv1, string str_id = "")
@@ -87,7 +116,7 @@ namespace GameEngine.Core.Utils.ImGuiImple
         {
             ImGui.SetCursorPos(pos);
 
-            if(ImGui.Checkbox(label, ref v))
+            if (ImGui.Checkbox(label, ref v))
                 return true;
 
             return false;
@@ -98,7 +127,7 @@ namespace GameEngine.Core.Utils.ImGuiImple
         {
             var startPos = ImGui.GetCursorPos();
             float buttonPosX = ImGui.GetWindowSize().X;
-            if(ImGui.TreeNode(label))
+            if (ImGui.TreeNode(label))
             {
                 ImGui.SetCursorPos(new Vector2(buttonPosX - 75, startPos.Y));
                 clouse = ImGui.SmallButton("remove");
@@ -126,9 +155,9 @@ namespace GameEngine.Core.Utils.ImGuiImple
             return false;
         }
 
-        private static string _selectAssetSearch;
+        private static string _selectAssetSearch = string.Empty;
 
-        public static IAsset SelectAsset(AssetType type)
+        public static IAsset? SelectAsset(AssetType type)
         {
             if (ImGui.Begin("Select asset"))
             {
@@ -138,7 +167,7 @@ namespace GameEngine.Core.Utils.ImGuiImple
 
                 int x = 0, y = 0;
                 int count = 0;
-                string? nameAsset = null;
+                string? nameAsset = string.Empty;
 
                 if (type == AssetType.Sprite)
                     count = AssetsMenager.GetAssetsCount<ImageAsset>(keySearch: _selectAssetSearch, type: type);
@@ -158,6 +187,7 @@ namespace GameEngine.Core.Utils.ImGuiImple
                         var asset = AssetsMenager.GetAssetByIndex<ImageAsset>(i, keySearch: _selectAssetSearch, type: AssetType.Sprite);
                         if (ImGui.ImageButton((nint)asset.Texture!.NativeHandle, new Vector2(64, 64)))
                         {
+                            _selectAssetSearch = string.Empty;
                             return asset;
                         }
                         if (ImGui.IsItemHovered())
@@ -165,12 +195,13 @@ namespace GameEngine.Core.Utils.ImGuiImple
 
                         nameAsset = asset.Name;
                     }
-                    else if(type == AssetType.Sound)
+                    else if (type == AssetType.Sound)
                     {
-                        var audioIcon = (nint)AssetsMenager.GetAsset<ImageAsset>("audio_icon").Texture!.NativeHandle;
+                        var audioIcon = (nint)AssetsMenager.GetAsset<ImageAsset>("audio_icon")!.Texture!.NativeHandle;
                         var asset = AssetsMenager.GetAssetByIndex<AudioAsset>(i, keySearch: _selectAssetSearch, type: AssetType.Sprite);
                         if (ImGui.ImageButton(audioIcon, new Vector2(64, 64)))
                         {
+                            _selectAssetSearch = string.Empty;
                             return asset;
                         }
                         if (ImGui.IsItemHovered())
@@ -178,7 +209,7 @@ namespace GameEngine.Core.Utils.ImGuiImple
 
                         nameAsset = asset.Name;
                     }
-                    else if(type == AssetType.Text)
+                    else if (type == AssetType.Text)
                     {
 
                     }
@@ -201,6 +232,15 @@ namespace GameEngine.Core.Utils.ImGuiImple
             }
 
             return null;
+        }
+
+        public static void OpenFileDialog(string name)
+        {
+            if (ImGui.Begin(name))
+            {
+                ImGui.End();
+            }
+
         }
     }
 }

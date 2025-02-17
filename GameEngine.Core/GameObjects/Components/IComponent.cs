@@ -10,7 +10,7 @@ namespace GameEngine.Core.GameObjects.Components
 {
     public interface IComponent
     {
-        Guid Id { get; set; }
+        Guid Id { get; }
         string Name { get; set; }
         IGameObject Perent { get; set; }
 

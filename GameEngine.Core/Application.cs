@@ -5,6 +5,7 @@ using ImGuiNET;
 using SFML.Graphics;
 using SFML.System;
 using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace GameEngine.Core
 {
@@ -13,7 +14,7 @@ namespace GameEngine.Core
         protected Window _window;
         protected WindowSettings _windowSettings;
 
-        protected ScenesStack _scenesStack;
+        protected SceneStack _scenesStack;
 
         public Application(WindowSettings settings)
         {
@@ -22,14 +23,13 @@ namespace GameEngine.Core
             _window.SetVerticalSyncEnabled(settings.VSinc);
             _window.SetFramerateLimit(settings.FramerateLimit);
 
-            _scenesStack = new ScenesStack("Stack");
+            _scenesStack = new SceneStack("Stack");
         }
 
-        public ScenesStack GetScenesStack() => _scenesStack;
+        public SceneStack GetScenesStack() => _scenesStack;
 
         public virtual void Run()
         {
-            _scenesStack.SetCamera(new Camera(_window.GetView()));
             _scenesStack.Start();
 
             _window.Run();
@@ -47,10 +47,12 @@ namespace GameEngine.Core
             _scenesStack.Draw(target, states);
         }
 
-        public virtual Camera Resize(Vector2u size)
+        public virtual void Resize(Vector2u size)
         {
-            return _scenesStack.GetCamera().Resize((Vector2f)size);
+            _scenesStack.Resize((Vector2f)size);
         }
+
+        public virtual Camera GetCamera() => _scenesStack!.GetCamera();
 
         public virtual void Close()
         {

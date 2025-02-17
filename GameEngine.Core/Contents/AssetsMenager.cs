@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace GameEngine.Core.Contents
@@ -12,6 +13,9 @@ namespace GameEngine.Core.Contents
     {
         private static SortedDictionary<string, IAsset> _assets = [];
         private string _path;
+
+        [JsonConstructor]
+        private AssetsMenager() { }
 
         public AssetsMenager(string path)
         {

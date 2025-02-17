@@ -11,6 +11,8 @@ namespace GameEngine.Core.Contents.Assets
     {
         private SoundBuffer _soundBuffer;
 
+        public SoundBuffer SoundBuffer { get => _soundBuffer; }
+
         public AudioAsset(string filePath, string name)
         {
             _soundBuffer = new SoundBuffer(filePath);

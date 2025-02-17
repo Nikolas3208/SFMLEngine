@@ -14,7 +14,7 @@ namespace GameEngine.Core.GameObjects
     {
         Guid Id { get; set; }
         string Name { get; set; }
-        SceneBase Perent {  get; set; }
+        IScene Perent {  get; set; }
 
         void AddComponent(IComponent component);
         void RemoveComponent(IComponent component);

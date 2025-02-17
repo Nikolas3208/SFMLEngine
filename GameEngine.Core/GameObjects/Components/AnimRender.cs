@@ -19,14 +19,13 @@ namespace GameEngine.Core.GameObjects.Components
         private AnimSprite _animSprite;
         private string currentAnim = string.Empty;
 
-        public Guid Id { get; set; }
+        public Guid Id { get; }
         public string Name { get; set; } = nameof(AnimRender);
         public IGameObject Perent { get; set; }
 
-        public AnimRender(IGameObject perent)
+        public AnimRender()
         {
             Id = Guid.NewGuid();
-            Perent = perent;
         }
 
         public void Start()

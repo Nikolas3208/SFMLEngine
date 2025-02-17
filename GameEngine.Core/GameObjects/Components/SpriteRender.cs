@@ -5,13 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace GameEngine.Core.GameObjects.Components
 {
     public class SpriteRender : IComponent
     {
-        private Guid _id;
+
         private string _name = nameof(SpriteRender);
         private IGameObject _gameObject;
         private Sprite _sprite;
@@ -20,12 +21,18 @@ namespace GameEngine.Core.GameObjects.Components
         private bool _flipX = false;
         private bool _flipY = false;
 
-        public Guid Id { get => _id; set => _id = value; }
+        [JsonInclude]
+        public Guid Id { get; }
+        [JsonInclude]
         public string Name { get => _name; set => _name = value; }
+        [JsonInclude]
         public IGameObject Perent { get => _gameObject; set => _gameObject = value; }
+        [JsonInclude]
         public string SpriteName { get; set; } = string.Empty;
+        [JsonInclude]
         public Color Color { get => _color; set { _sprite.Color = value; _color = value; } }
 
+        [JsonInclude]
         public bool FlipX
         {
             get => _flipX;
@@ -38,6 +45,7 @@ namespace GameEngine.Core.GameObjects.Components
                     _sprite.Scale = new Vector2f(1, _sprite.Scale.Y);
             }
         }
+        [JsonInclude]
         public bool FlipY
         {
             get => _flipY;
@@ -51,37 +59,33 @@ namespace GameEngine.Core.GameObjects.Components
             }
         }
 
-        public SpriteRender(IGameObject perent)
+        public SpriteRender()
         {
             _sprite = new Sprite();
 
-            Perent = perent;
             Id = Guid.NewGuid();
         }
 
-        public SpriteRender(Texture texture, IGameObject perent)
+        public SpriteRender(Texture texture)
         {
             _sprite = new Sprite(texture);
             _sprite.Origin = (Vector2f)texture.Size / 2;
 
-            Perent = perent;
             Id = Guid.NewGuid();
         }
 
-        public SpriteRender(Sprite sprite, IGameObject perent)
+        public SpriteRender(Sprite sprite)
         {
             _sprite = sprite;
 
-            Perent = perent;
             Id = Guid.NewGuid();
         }
 
-        public SpriteRender(SpriteSheet spriteSheet, IGameObject perent)
+        public SpriteRender(SpriteSheet spriteSheet)
         {
             _sprite = spriteSheet.GetSprite();
             _sprite.Origin = new Vector2f(spriteSheet.SubWidth, spriteSheet.SubHeight);
 
-            Perent = perent;
             Id = Guid.NewGuid();
         }
         
@@ -114,5 +118,23 @@ namespace GameEngine.Core.GameObjects.Components
         }
 
         public Sprite GetSprite() => _sprite;
+
+        public FloatRect? GetFloatRect()
+        {
+            if (_sprite != null && _sprite.Texture != null)
+                return new FloatRect(-_sprite.Origin, new Vector2f(_sprite.Texture.Size.X, _sprite.Texture.Size.Y));
+
+            return null;
+        }
+
+        public Vector2f GetSize()
+        {
+            if (_sprite != null && _sprite.Texture != null)
+                return (Vector2f)_sprite.Texture.Size;
+
+            return new Vector2f();
+        }
+
+        public Vector2f GetOrigin() => _sprite.Origin;
     }
 }

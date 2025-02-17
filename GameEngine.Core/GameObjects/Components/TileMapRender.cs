@@ -17,7 +17,7 @@ namespace GameEngine.Core.GameObjects.Components
 {
     public class TileMapRender : IComponent
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; }
         public string Name { get; set; } = nameof(TileMapRender);
         public IGameObject Perent { get; set; }
 
@@ -28,10 +28,8 @@ namespace GameEngine.Core.GameObjects.Components
 
         private Texture Texture;
 
-
-        public TileMapRender(Map map, IGameObject perent)
+        public TileMapRender(Map map)
         {
-            Perent = perent;
             Id = Guid.NewGuid();
             _map = map;
         }

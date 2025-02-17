@@ -10,13 +10,12 @@ namespace GameEngine.Core.GameObjects.Components
 {
     public class Audio : IComponent
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; }
         public string Name { get; set; } = nameof(Audio);
         public IGameObject Perent { get; set; }
 
-        public Audio(IGameObject perent)
+        public Audio()
         {
-            Perent = perent;
             Id = Guid.NewGuid();
         }
 

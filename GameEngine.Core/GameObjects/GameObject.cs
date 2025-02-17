@@ -1,27 +1,40 @@
 ﻿using GameEngine.Core.GameObjects.Components;
 using GameEngine.Core.Scenes;
+using GameEngine.Core.Scenes.Layers;
 using SFML.Graphics;
 using SFML.System;
+using System.Text.Json.Serialization;
 
 namespace GameEngine.Core.GameObjects
 {
-    public class GameObject : Transformable, IGameObject
+    public class GameObject : Transformation, IGameObject
     {
+        [JsonInclude]
         private Guid _id;
+        [JsonInclude]
         private string _name = nameof(GameObject);
-        private SceneBase _perent;
+        private IScene? _perent;
 
+        [JsonInclude]
         private List<IComponent> _components;
 
+        [JsonIgnore]
         public Guid Id { get => _id; set => _id = value; }
+        [JsonIgnore]
         public string Name { get => _name; set => _name = value; }
-        public SceneBase Perent { get => _perent; set => _perent = value; }
+        [JsonIgnore]
+        public IScene? Perent { get => _perent; set => _perent = value; }
+        public ILayer? Layer { get; set; }
 
-        public GameObject(SceneBase perent, string name)
+        public GameObject()
+        {
+
+        }
+
+        public GameObject(string name)
         {
             _components = new List<IComponent>();
 
-            Perent = perent;
             Name = name;
             Id = Guid.NewGuid();
         }
@@ -54,6 +67,7 @@ namespace GameEngine.Core.GameObjects
         {
             if (_components.Where(c => c.Name == component.Name).Count() == 0)
             {
+                component.Perent = this;
                 _components.Add(component);
 
                 Start();
@@ -65,13 +79,13 @@ namespace GameEngine.Core.GameObjects
             switch (component)
             {
                 case ComponentType.SpriteRender:
-                    AddComponent(new SpriteRender(this));
+                    AddComponent(new SpriteRender());
                     break;
                 case ComponentType.AnimRender:
-                    AddComponent(new AnimRender(this));
+                    AddComponent(new AnimRender());
                     break;
                 case ComponentType.Audio:
-                    AddComponent(new Audio(this));
+                    AddComponent(new Audio());
                     break;
             }
         }
@@ -94,6 +108,18 @@ namespace GameEngine.Core.GameObjects
         public List<IComponent> GetComponents()
         {
             return _components;
+        }
+
+        public FloatRect GetFloatRect()
+        {
+            var spriteRener = GetComponent<SpriteRender>();
+
+            if (spriteRener != null)
+            {
+                return new FloatRect(new Vector2f(Position.X - (spriteRener.GetOrigin().X * Scale.X), Position.Y - (spriteRener.GetOrigin().Y * Scale.Y)) , new Vector2f(spriteRener.GetSize().X * Scale.X, spriteRener.GetSize().Y * Scale.Y));
+            }
+
+            return new FloatRect(Position, new Vector2f(5, 5));
         }
     }
 }

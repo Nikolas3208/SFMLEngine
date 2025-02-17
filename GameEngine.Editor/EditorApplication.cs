@@ -17,7 +17,7 @@ namespace GameEngine.Editor
         {
             GuiImpl.Init(_window.GetRenderWindow());
 
-            _scene = new EditorScene();
+            _scene = new EditorScene((Vector2f)_window.GetSize());
 
             _scenesStack.AddScene(_scene);
 
@@ -35,23 +35,31 @@ namespace GameEngine.Editor
 
         public override void Draw(RenderTarget target, RenderStates states)
         {
+            _window.SetView(new FloatRect(GetCamera().Position, GetCamera().Size));
             base.Draw(target, states);
+            _interface.Gizmo.Update();
+            _interface.Gizmo.Draw(target, states);
 
             _renderWindowTexture.Update(_window.GetRenderWindow());
             _window.Clear();
 
+            _window.SetView(new FloatRect(new Vector2f(), new Vector2f(_window.GetSize().X, _window.GetSize().Y)));
+
             _interface.SceneTexture = (nint)_renderWindowTexture.NativeHandle;
 
-            _interface.Draw();
+            _interface.Draw(target, states);
 
             GuiImpl.Render();
         }
 
-        public override Camera Resize(Vector2u size)
+        public override void Resize(Vector2u size)
         {
             _renderWindowTexture = new Texture(size.X, size.Y);
+            _scenesStack.Resize((Vector2f)size);
 
-            return base.Resize(size);
+            base.Resize(size);
         }
+
+        public override Camera GetCamera() => _scenesStack.GetCamera();
     }
 }

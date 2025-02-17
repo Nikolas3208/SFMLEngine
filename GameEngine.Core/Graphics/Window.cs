@@ -34,7 +34,7 @@ namespace GameEngine.Core.Graphics
 
         private void Resized(object? sender, SizeEventArgs e)
         {
-            _renderWindow.SetView(_application.Resize(new Vector2u(e.Width, e.Height)).GetView());
+            _renderWindow.SetView(new View(new FloatRect(0, 0, e.Width, e.Height)));
         }
 
         public void Run()
@@ -45,10 +45,7 @@ namespace GameEngine.Core.Graphics
 
                 _application.Update(_clock.Restart());
 
-                if (_application.GetScenesStack().GetCamera() != null)
-                    _renderWindow.SetView(_application.GetScenesStack().GetCamera().GetView() ?? _renderWindow.GetView());
-
-                _renderWindow.Clear();
+                _renderWindow.Clear(new Color(61, 61, 61));
 
                 _renderWindow.Draw(_application);
 
@@ -68,6 +65,8 @@ namespace GameEngine.Core.Graphics
             return _renderWindow;
         }
 
+        public Vector2u GetSize() => _renderWindow.Size;
+
         public void SetFramerateLimit(uint framerateLimit)
         {
             _renderWindow.SetFramerateLimit(framerateLimit);
@@ -81,5 +80,10 @@ namespace GameEngine.Core.Graphics
         public void Clear() => _renderWindow.Clear();
 
         public void Clear(Color color) => _renderWindow.Clear(color);
+
+        public void SetView(FloatRect floatRect)
+        {
+            _renderWindow.SetView(new View(floatRect));
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace GameEngine.Core.Contents.Assets
         Image,
         Sprite,
         Sound,
-        Text
+        Text,
+        Map
     }
 }
